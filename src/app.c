@@ -10,7 +10,7 @@
 #include "ukfLib/cfg/ukfCfg.h"
 #include "usart.h"
 
-#define UKF_TEST_EPS (1e-6)
+#define UKF_TEST_EPS (1e-10)
 
 extern tUkfMatrix UkfMatrixCfg;
 
@@ -21,7 +21,7 @@ int main(void) {
     gpio_setup();
     usart_setup();
 
-    printf("App STARTED\n");
+    printf("App STARTED\n\n");
 
     //UKF test start here
     ukf_test();
