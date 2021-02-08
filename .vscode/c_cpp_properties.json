@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "arm",
+            "includePath": [
+                "src",
+                "libopencm3/include"
+            ],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "defines": [
+                "STM32F4"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerArgs": [
+                "-mcpu=cortex-m4",
+                "-mthumb",
+                "-Wall",
+                "-Werror",
+                "-std=gnu11",
+                "-O0",
+                "-g",
+                "-ffunction-sections",
+                "-fdata-sections"
+            ],
+            "cStandard": "c11"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,7 @@
+bin/
+*.elf
+*.bin
+generated.*.ld
+test_results/
+build/
+renode/

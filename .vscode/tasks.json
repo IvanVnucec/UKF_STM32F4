@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "make",
+            "type": "shell",
+            "args": [],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "presentation": {
+                "reveal": "always"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "start renode",
+            "command": "start.sh",
+            "args": [""],
+            "type": "shell",
+            "group": "build",
+            "dependsOn": "build"
+        }
+    ]
+}

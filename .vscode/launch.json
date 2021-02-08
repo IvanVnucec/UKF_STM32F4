@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Renode)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "cwd": "${workspaceFolder}",
+            "runToMain": true,
+            "executable": "${workspaceFolder}/build/renode-example.elf",
+            "device": "STM32F429ZIT6",
+            "gdbTarget": ":3333",
+            "svdFile": "${workspaceFolder}/stm32f429x.svd",
+            "armToolchainPath": "/usr/bin"
+        },
+        {
+            "name": "Debug (OpenOCD)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build",
+            "runToMain": true,
+            "executable": "${workspaceFolder}/build/renode-example.elf",
+            "device": "STM32F429ZIT6",
+            "configFiles": [
+                "interface/stlink-v2.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/stm32f429x.svd",
+            "armToolchainPath": "/usr/bin"
+        }
+    ]
+}
