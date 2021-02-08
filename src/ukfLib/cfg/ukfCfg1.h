@@ -6,4 +6,3 @@
 extern tUkfMatrix UkfMatrixCfg1;
 
 #endif /* UKFCFG1_H */
-

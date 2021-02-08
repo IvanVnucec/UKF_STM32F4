@@ -36,4 +36,3 @@
 extern tUkfMatrix UkfMatrixCfg2;
 
 #endif /* UKFCFG2_H */
-
