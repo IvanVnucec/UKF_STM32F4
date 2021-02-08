@@ -14,8 +14,6 @@
 #define cfg0 (uint8)0
 #define cfg1 (uint8)1
 
-void show_matrix_obj(tMatrix A);
-void show_matrix(float64* A, int n, int m);
 void ukf_test(void);
 void mtxlib_test(void);
 
@@ -40,29 +38,6 @@ int main(void) {
     return 0;
 }
 
-void show_matrix_obj(tMatrix A) {
-    int i, j;
-
-    for (i = 0; i < A.nrow; i++) {
-        for (j = 0; j < A.ncol; j++) {
-            printf("%2.14f ", A.val[A.ncol * i + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void show_matrix(float64* A, int n, int m) {
-    int i, j;
-
-    for (i = 0; i < n; i++) {
-        for (j = 0; j < m; j++) {
-            printf("%2.14f ", A[m * i + j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
 /******************************************************************************************************************************************************************************************************\
  ***  FUNCTION:
  ***      void ukf_test(void)
@@ -89,15 +64,14 @@ void ukf_test(void) {
 
     //UKF filter measurement input(data log is generated in matlab and used for UKF simulation for 15 iteration)
     static const float64 yt[2][15] =
-        {
-            {0, 16.085992708563385, 12.714829185978214, 14.528500994457660, 19.105561355310275, 23.252820029388918, 29.282949862903255, 36.270058819651275, 44.244884173240955, 47.394243121124411, 55.988905459180458, 61.667450941562109, 68.624980301613647, 76.337963872393104, 82.611325690835159},  //y1 test
-            {0, 16.750821420874981, 14.277640835870006, 16.320754051600520, 20.560460303503849, 24.827446289454556, 31.290961393448615, 36.853553457560210, 42.157283183453522, 49.382835230961490, 57.516319669684677, 65.664496283509095, 71.428712755732704, 79.241720894223079, 84.902760328915676}};
+        {{0, 16.085992708563385, 12.714829185978214, 14.528500994457660, 19.105561355310275, 23.252820029388918, 29.282949862903255, 36.270058819651275, 44.244884173240955, 47.394243121124411, 55.988905459180458, 61.667450941562109, 68.624980301613647, 76.337963872393104, 82.611325690835159},  //y1 test
+        {0,  16.750821420874981, 14.277640835870006, 16.320754051600520, 20.560460303503849, 24.827446289454556, 31.290961393448615, 36.853553457560210, 42.157283183453522, 49.382835230961490, 57.516319669684677, 65.664496283509095, 71.428712755732704, 79.241720894223079, 84.902760328915676}};
 
     //UKF filter expected system states calculated with matlab script for 15 iterations
     static const float64 x_exp[15][4] =
         {/*          x1                   x2                   x3                   x4*/
-         {4.901482729572258, 4.576939885855807, 49.990342921246459, 49.958134463327802},
-         {10.103304943868373, 9.409135720815829, 50.226544716205318, 49.750795004242228},
+         {4.901482729572258,  4.576939885855807,  49.990342921246459, 49.958134463327802},
+         {10.103304943868373, 9.409135720815829,  50.226544716205318, 49.750795004242228},
          {15.132069573131298, 14.138974122835807, 50.429540890147599, 49.191128327737864},
          {20.322823824348411, 19.096919763991380, 50.836860772439010, 49.189580207886742},
          {24.940146120267713, 23.399758647105461, 49.577386595072561, 47.383813382660449},
@@ -120,6 +94,7 @@ void ukf_test(void) {
         float64 absErrAccum[4] = {0, 0, 0, 0};
 
         //UKF simulation CFG0: BEGIN
+        printf("Loop | system states : ukf.m | system states : est | system states : impl. diff \n");
         for (simLoop = 1; simLoop < 15; simLoop++) {
             float64* const py_cfg0 = ukfIo[cfg0].input.y.val;
 
@@ -135,11 +110,11 @@ void ukf_test(void) {
             err[2] = fabs(ukfIo[cfg0].update.x.val[2] - x_exp[simLoop - 1][2]);
             err[3] = fabs(ukfIo[cfg0].update.x.val[3] - x_exp[simLoop - 1][3]);
 
-            printf("Loop: %d |system states : ukf.m | system states : est | system states : impl. diff \n", (int)simLoop);
-            printf("          %2.14f        %2.14f       %2.14f\n", x_exp[simLoop - 1][0], ukfIo[cfg0].update.x.val[0], err[0]);
-            printf("          %2.14f        %2.14f       %2.14f\n", x_exp[simLoop - 1][1], ukfIo[cfg0].update.x.val[1], err[1]);
-            printf("          %2.14f        %2.14f       %2.14f\n", x_exp[simLoop - 1][2], ukfIo[cfg0].update.x.val[2], err[2]);
-            printf("          %2.14f        %2.14f       %2.14f\n", x_exp[simLoop - 1][3], ukfIo[cfg0].update.x.val[3], err[3]);
+            
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][0], ukfIo[cfg0].update.x.val[0], err[0]);
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][1], ukfIo[cfg0].update.x.val[1], err[1]);
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][2], ukfIo[cfg0].update.x.val[2], err[2]);
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][3], ukfIo[cfg0].update.x.val[3], err[3]);
 
             //accumulate the differennce between reference matlab implementation and results from C code execution
             absErrAccum[0] += err[0];
@@ -147,7 +122,8 @@ void ukf_test(void) {
             absErrAccum[2] += err[2];
             absErrAccum[3] += err[3];
         }
-        printf("Accumulated error: CFG0 \n");
+
+        printf("Accumluated error: CFG0 \n");
         printf("%2.16f  \n%2.16f  \n%2.16f  \n%2.16f \n", absErrAccum[0], absErrAccum[1], absErrAccum[2], absErrAccum[3]);
 
         //UKF simulation CFG0: END
@@ -166,8 +142,10 @@ void ukf_test(void) {
         const float64 m = 0.5;
         const float64 g = 9.81;
         static const float64 T0 = 0.0001;
+        float64 absErrAccum[2] = {0, 0};
 
         //UKF simulation: BEGIN
+        printf("Loop | system states : real | system states : est | system states : err \n");
         for (simLoop = 0; simLoop < 70; simLoop++) {
             float64* const py_cfg1 = ukfIo[cfg1].input.y.val;
             float64 err[2] = {0, 0};
@@ -185,10 +163,17 @@ void ukf_test(void) {
             err[0] = fabs(ukfIo[cfg1].update.x.val[0] - tetha);
             err[1] = fabs(ukfIo[cfg1].update.x.val[1] - tetha_dot);
 
-            printf("Loop: %d |system states : real | system states : est | system states : err \n", (int)simLoop);
-            printf("          %2.14f       %2.14f      %2.14f\n", tetha, ukfIo[1].update.x.val[0], err[0]);
-            printf("          %2.14f      %2.14f     %2.14f\n", tetha_dot, ukfIo[1].update.x.val[1], err[1]);
+            //accumulate the differennce between reference matlab implementation and results from C code execution
+            absErrAccum[0] += err[0];
+            absErrAccum[1] += err[1];
+
+            printf("% -3.5f % -3.5f % -3.14f\n", tetha,     ukfIo[1].update.x.val[0], err[0]);
+            printf("% -3.5f % -3.5f % -3.14f\n", tetha_dot, ukfIo[1].update.x.val[1], err[1]);
         }
+        
+        printf("Accumulated error: CFG1 \n");
+        printf("%2.16f  \n%2.16f\n", absErrAccum[0], absErrAccum[1]);
+
         //UKF simulation: END
     } else {
         //initialization fail
@@ -225,94 +210,124 @@ void mtxlib_test(void) {
 
     static float64 symMtxChol[5][5] =
         {{1.734924996302842, -0.581858997840148, 0.669639355449256, -0.168265491890613, -0.446829589119858},
-         {0, 1.634443284249678, -0.379239855780691, 0.650904975441148, -0.337680621986338},
-         {0, 0, 1.554903536627710, -0.418003689501540, 0.857240820764834},
-         {0, 0, 0, 1.543776893059448, -0.328117294491480},
-         {0, 0, 0, 0, 1.361527478565284}};
+         {0.0,                1.634443284249678, -0.379239855780691, 0.650904975441148, -0.337680621986338},
+         {0.0,                0.0,                1.554903536627710, -0.418003689501540, 0.857240820764834},
+         {0.0,                0.0,                0.0,               1.543776893059448, -0.328117294491480},
+         {0.0,                0.0,                0.0,               0.0,               1.361527478565284}};
 
     static float64 Identity_5x5[4][4] =
-        {{
-             1.0,
-             0,
-             0,
-             0,
-         },
-         {
-             0,
-             1.0,
-             0,
-             0,
-         },
-         {
-             0,
-             0,
-             1.0,
-             0,
-         },
-         {0, 0, 0, 1.0}};
+        {{1.0, 0.0, 0.0, 0.0},
+         {0.0, 1.0, 0.0, 0.0},
+         {0.0, 0.0, 1.0, 0.0},
+         {0.0, 0.0, 0.0, 1.0}};
 
     static float64 TestMatrix_0_4x4[4][4] =
         {{3.0, 5.0, -1.0, -4},
          {1.0, 4.0, -0.7, -3},
-         {0, -2.0, 0, 1},
-         {-2.0, 6.0, 0, 0.3}};
+         {0.0, -2.0, 0.0,  1},
+         {-2.0, 6.0, 0.0, 0.3}};
 
-#if 0
-    static float64 TestMatrix_1_3x3[3][3] = 
-    {{10.5, 2.17, 3.03},
-    { 0.44, 0.59, 6.89},
-    { 7.56, 8.17, 9.21}};
+    static float64 TestMatrix_1_5x5[5][5];
     
+    /*
     static float64 TestMatrix_2_3x3[3][3] = 
-    { {1.11, 29.3, 31.2},
-    {45.3, 5.17, 6.11},
-    {7.61, 88.0, 9.34}};
-#endif
-
-    static float64 TestMatrix_1_2x3[2][3] =
-        {{1.11, 29.3, 31.2},  //size 3x3
-         {45.3, 5.17, 6.11}};
-
-    static float64 TestMatrixDest_3x2[3][2] =
-        {
-            {0, 0},
-            {0, 0},
-            {0, 0}};
-    tMatrix myFactMatrix;
-    tMatrix myTestMatx = {0, 0, 0, NULL};
-    tMatrix myChol = {0, 0, 0, NULL};
-    tMatrix Im = {0, 0, 0, NULL};
-    tMatrix oTestMatrix_0_4x4 = {0, 0, 0, NULL};
-    tMatrix oTestMatrixDest_3x2 = {0, 0, 0, NULL};
-
-    mtx_init_f64(&myTestMatx, &TestMatrix_1_2x3[0][0], NROWS(TestMatrix_1_2x3), NCOL(TestMatrix_1_2x3), COLXROW(TestMatrix_1_2x3));
-    mtx_init_f64(&myChol, &symMtxChol[0][0], NROWS(symMtxChol), NCOL(symMtxChol), COLXROW(symMtxChol));
-    mtx_init_f64(&Im, &Identity_5x5[0][0], NROWS(Identity_5x5), NCOL(Identity_5x5), COLXROW(Identity_5x5));
-    mtx_init_f64(&oTestMatrix_0_4x4, &TestMatrix_0_4x4[0][0], NROWS(TestMatrix_0_4x4), NCOL(TestMatrix_0_4x4), COLXROW(TestMatrix_0_4x4));
-    mtx_init_f64(&oTestMatrixDest_3x2, &TestMatrixDest_3x2[0][0], NROWS(TestMatrixDest_3x2), NCOL(TestMatrixDest_3x2), COLXROW(TestMatrixDest_3x2));
-    //show_matrix(&TestMatrix_1_2x3[0][0],2,3);
-    //show_matrix_obj(myTestMatx);
-
-    (void)mtx_init_f64(&myFactMatrix, &symMtx[0][0], NROWS(symMtx), NCOL(symMtx), COLXROW(symMtx));
-    //show_matrix(&symMtx[0][0],5,5);
-
-    (void)mtx_chol_lower_f64(&myFactMatrix);
-    show_matrix_obj(myFactMatrix);
-
-    /*show_matrix_obj(myChol);
-    mtx_transp_square_f64(&myChol);
-    show_matrix_obj(myChol);
+        {{1.11, 29.3, 31.2},
+        {45.3, 5.17, 6.11},
+        {7.61, 88.0, 9.34}};
     */
 
-    show_matrix_obj(Im);
-    show_matrix_obj(oTestMatrix_0_4x4);
+    static float64 TestMatrix_1_2x3[2][3] =
+        {{1.11, 29.3, 31.2},
+        {45.3, 5.17, 6.11}};
+
+    static float64 TestMatrixDest_3x2[3][2] =
+        {{0.0, 0.0},
+        {0.0, 0.0},
+        {0.0, 0.0}};
+
+    tMatrix myFactMatrix;
+    tMatrix myTestMatx;
+    tMatrix myChol;
+    tMatrix Im;
+    tMatrix oTestMatrix_0_4x4;
+    tMatrix oTestMatrixDest_3x2;
+    tMatrix mtrx_5x5;
+
+    mtx_init_f64(&myTestMatx, 
+        &TestMatrix_1_2x3[0][0], 
+        NROWS(TestMatrix_1_2x3), 
+        NCOL(TestMatrix_1_2x3), 
+        COLXROW(TestMatrix_1_2x3));
+
+    mtx_init_f64(&myChol, 
+        &symMtxChol[0][0], 
+        NROWS(symMtxChol), 
+        NCOL(symMtxChol), 
+        COLXROW(symMtxChol));
+
+    mtx_init_f64(&Im, 
+        &Identity_5x5[0][0], 
+        NROWS(Identity_5x5), 
+        NCOL(Identity_5x5), 
+        COLXROW(Identity_5x5));
+
+    mtx_init_f64(&oTestMatrix_0_4x4, 
+        &TestMatrix_0_4x4[0][0], 
+        NROWS(TestMatrix_0_4x4), 
+        NCOL(TestMatrix_0_4x4), 
+        COLXROW(TestMatrix_0_4x4));
+
+    mtx_init_f64(&oTestMatrixDest_3x2, 
+        &TestMatrixDest_3x2[0][0], 
+        NROWS(TestMatrixDest_3x2), 
+        NCOL(TestMatrixDest_3x2), 
+        COLXROW(TestMatrixDest_3x2));
+
+    mtx_init_f64(&myFactMatrix, 
+        &symMtx[0][0], 
+        NROWS(symMtx), 
+        NCOL(symMtx), 
+        COLXROW(symMtx));
+
+    mtx_init_f64(&mtrx_5x5, 
+        &TestMatrix_1_5x5[0][0], 
+        NROWS(TestMatrix_1_5x5), 
+        NCOL(TestMatrix_1_5x5), 
+        COLXROW(TestMatrix_1_5x5));
+
+    printf("TESTING Lower Cholesky decomposition.\n");
+    printf("A\n");
+    mtx_print_f64(&myFactMatrix);
+    mtx_chol_lower_f64(&myFactMatrix);
+    printf("sqrt(A)\n");
+    mtx_print_f64(&myFactMatrix);
+    printf("sqrt(A) * sqrt(A)' = A\n");
+    mtx_mul_src2tr_f64(&myFactMatrix, &myFactMatrix, &mtrx_5x5);
+    mtx_print_f64(&mtrx_5x5);
+
+    /* TODO: Implement other tests */
+
+    /*
+    printf("This two matrices below should be transposed.\n");
+    mtx_print_f64(&myChol);
+    mtx_transp_square_f64(&myChol);
+    mtx_print_f64(&myChol);
+
+    printf("Matrix inverse:\n");
+    mtx_print_f64(&Im);
+    mtx_print_f64(&oTestMatrix_0_4x4);
     mtx_inv_f64(&oTestMatrix_0_4x4, &Im);
-    show_matrix_obj(Im);
+    mtx_print_f64(&Im);
 
+    printf("Identity matrix:\n");
     mtx_identity_f64(&Im);
-    show_matrix_obj(Im);
+    mtx_print_f64(&Im);
 
-    //show_matrix_obj(myTestMatx);
-    //mtx_transp_dest_f64(&myTestMatx,&oTestMatrixDest_3x2);
-    //show_matrix_obj(oTestMatrixDest_3x2);*/
+    printf("Matrix transpose:\n");
+    mtx_print_f64(&myTestMatx);
+    mtx_transp_dest_f64(&myTestMatx,&oTestMatrixDest_3x2);
+    mtx_print_f64(&oTestMatrixDest_3x2);
+    */
+
+    return;
 }

@@ -27,4 +27,4 @@ macro reset
 runMacro $reset
 
 ## Start without user confirmation
-#start
+start

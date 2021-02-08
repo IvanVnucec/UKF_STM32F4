@@ -79,5 +79,6 @@ mtxResultInfo mtx_cpy_f64(tMatrix* const pDst, tMatrix const* const pSrc);
 mtxResultInfo mtx_identity_f64(tMatrix* const pSrc);
 mtxResultInfo mtx_zeros_f64(tMatrix* const pSrc);
 mtxResultInfo mtx_mul_src2tr_f64(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
+mtxResultInfo mtx_print_f64(tMatrix const *A);
 
 #endif

@@ -26,6 +26,8 @@
  *** SOFTWARE.
 \******************************************************************************************************************************************************************************************************/
 
+#include <stdio.h>
+
 #include "mtxLib.h"
 
 /******************************************************************************************************************************************************************************************************\
@@ -386,6 +388,7 @@ mtxResultInfo mtx_chol_upper_f64(tMatrix *const pSrc) {
  ***  SETTINGS:
  ***
 \******************************************************************************************************************************************************************************************************/
+/* TODO: implement pDst so it doesnt need to be initialized to an identity matrix beforehand, rather in this function IvanVnucec */
 mtxResultInfo mtx_inv_f64(tMatrix *const pSrc, tMatrix *const pDst) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     const uint8 nrow = pSrc->nrow;
@@ -644,6 +647,8 @@ mtxResultInfo mtx_identity_f64(tMatrix *const pSrc) {
         for (eIdx = 1; eIdx < pSrc->nelem; eIdx++) {
             const uint16 cmpLeft = (uint16)(eIdx / nCol);
 
+            /* TODO: Optimize this so we initialize matrix to all zeros and then with
+             * the for loop only initialize diagonals to 1.0 */
             pDst[eIdx] = eIdx < nCol ? 0 : cmpLeft == eIdx % (cmpLeft * nCol) ? 1
                                                                               : 0;
         }
@@ -677,6 +682,21 @@ mtxResultInfo mtx_zeros_f64(tMatrix *const pSrc) {
     for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
         pDst[eIdx] = 0;
     }
+
+    return Result;
+}
+
+mtxResultInfo mtx_print_f64(tMatrix const *A) {
+    int i, j;
+    mtxResultInfo Result = MTX_OPERATION_OK;
+
+    for (i = 0; i < A->nrow; i++) {
+        for (j = 0; j < A->ncol; j++) {
+            printf("% -3.5f ", A->val[A->ncol * i + j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 
     return Result;
 }
