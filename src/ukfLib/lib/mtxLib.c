@@ -370,52 +370,6 @@ mtxResultInfo mtx_chol_upper_f64(tMatrix *const pSrc) {
     return ResultL;
 }
 /******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION: Upper cholesky decomposition variant 1
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
-mtxResultInfo mtx_chol1_f64(float64 *A, float64 *L, uint8 size) {
-    uint8 Result = MTX_OPERATION_OK;
-    uint8 col, row;
-    sint8 tmp;
-    float64 sum = 0;
-
-    for (row = 0; row < size; row++) {
-        for (col = 0; col < size; col++) {
-            sum = A[size * row + col];
-
-            for (tmp = (sint8)(row - 1); tmp >= 0; tmp--) {
-                sum -= L[size * tmp + row] * L[size * tmp + col];
-            }
-
-            if (row == col) {
-                if (sum > 0) {
-                    L[size * row + col] = sqrt(sum);
-                } else {
-                    Result = MTX_NOT_POS_DEFINED;
-                }
-            } else if (row < col) {
-                L[size * row + col] = sum / L[size * row + row];  //sum/Lii(diag)
-            } else {
-                L[size * row + col] = 0;
-            }
-        }
-    }
-
-    return Result;
-}
-/******************************************************************************************************************************************************************************************************\
 ***  FUNCTION:
 ***     
  *** 
