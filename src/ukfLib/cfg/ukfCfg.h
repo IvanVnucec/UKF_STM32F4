@@ -3,7 +3,5 @@
 
 #include "../lib/ukfLib.h"
 
-extern tUkfMatrix UkfMatrixCfg0;
-
 #endif /* UKFCFG_H */
 

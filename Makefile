@@ -24,9 +24,7 @@ SRCS_APP = \
   src/syscalls.c \
   src/ukfLib/lib/mtxLib.c \
   src/ukfLib/lib/ukfLib.c \
-  src/ukfLib/cfg/ukfCfg.c \
-  src/ukfLib/cfg/ukfCfg1.c \
-  src/ukfLib/cfg/ukfCfg2.c
+  src/ukfLib/cfg/ukfCfg.c
 
 
 INCLUDES = \
@@ -97,7 +95,7 @@ test_docker:
 test_local: $(RENODE_REPO)
 	./run_tests.sh
 
-start_renode:
+start_renode: $(BUILD_DIR)/$(PROJECT).elf
 	./start.sh
 
 .PHONY: clean

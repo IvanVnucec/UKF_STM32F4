@@ -184,7 +184,7 @@ static float64 I_identity_matrix[2][2] =
         {0, 0},
 };
 
-tUkfMatrix UkfMatrixCfg0 =
+tUkfMatrix UkfMatrixCfg =
     {
         {COLXROW(Sc_vector), NROWS(Sc_vector), NCOL(Sc_vector), &Sc_vector[0][0]},
         {COLXROW(Wm_weight_vector), NROWS(Wm_weight_vector), NCOL(Wm_weight_vector), &Wm_weight_vector[0][0]},

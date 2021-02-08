@@ -8,11 +8,11 @@
 #include "clock.h"
 #include "gpio.h"
 #include "ukfLib/cfg/ukfCfg.h"
-#include "ukfLib/cfg/ukfCfg1.h"
 #include "usart.h"
 
-#define cfg0 (uint8)0
-#define cfg1 (uint8)1
+#define UKF_TEST_EPS (1e-6)
+
+extern tUkfMatrix UkfMatrixCfg;
 
 void ukf_test(void);
 
@@ -53,9 +53,8 @@ int main(void) {
  ***
 \******************************************************************************************************************************************************************************************************/
 void ukf_test(void) {
-    boolean tfInitCfg0 = 0;
-    boolean tfInitCfg1 = 0;
-    tUKF ukfIo[2];
+    boolean tfInitCfg = 0;
+    tUKF ukfIo;
     uint32 simLoop;
 
     //UKF filter measurement input(data log is generated in matlab and used for UKF simulation for 15 iteration)
@@ -82,35 +81,36 @@ void ukf_test(void) {
          {73.045763444967164, 63.838187852739992, 54.782159791340007, 44.291415099856643},
          {80.489525793047093, 66.908477563332085, 58.973616985147245, 42.638148924845950}};
 
-    //UKF initialization: CFG0
-    tfInitCfg0 = ukf_init(&ukfIo[cfg0], &UkfMatrixCfg0);
+    //UKF initialization: CFG
+    tfInitCfg = ukf_init(&ukfIo, &UkfMatrixCfg);
 
-    if (tfInitCfg0 == 0) {
+    if (tfInitCfg == 0) {
         float64 err[4] = {0, 0, 0, 0};
         float64 absErrAccum[4] = {0, 0, 0, 0};
 
         //UKF simulation CFG0: BEGIN
-        printf("Loop | system states : ukf.m | system states : est | system states : impl. diff \n");
+        //printf("ukf.m | ukf.c | diff \n");
         for (simLoop = 1; simLoop < 15; simLoop++) {
-            float64* const py_cfg0 = ukfIo[cfg0].input.y.val;
+            float64* const py_cfg = ukfIo.input.y.val;
 
             //UKF:CFG0 apply/load system measurements in working array for current iteration.
-            py_cfg0[0] = yt[0][simLoop];
-            py_cfg0[1] = yt[1][simLoop];
+            py_cfg[0] = yt[0][simLoop];
+            py_cfg[1] = yt[1][simLoop];
 
             //UKF:CFG0 periodic task call
-            (void)ukf_step(&ukfIo[cfg0]);
+            (void)ukf_step(&ukfIo);
 
-            err[0] = fabs(ukfIo[cfg0].update.x.val[0] - x_exp[simLoop - 1][0]);
-            err[1] = fabs(ukfIo[cfg0].update.x.val[1] - x_exp[simLoop - 1][1]);
-            err[2] = fabs(ukfIo[cfg0].update.x.val[2] - x_exp[simLoop - 1][2]);
-            err[3] = fabs(ukfIo[cfg0].update.x.val[3] - x_exp[simLoop - 1][3]);
+            err[0] = fabs(ukfIo.update.x.val[0] - x_exp[simLoop - 1][0]);
+            err[1] = fabs(ukfIo.update.x.val[1] - x_exp[simLoop - 1][1]);
+            err[2] = fabs(ukfIo.update.x.val[2] - x_exp[simLoop - 1][2]);
+            err[3] = fabs(ukfIo.update.x.val[3] - x_exp[simLoop - 1][3]);
 
-            
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][0], ukfIo[cfg0].update.x.val[0], err[0]);
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][1], ukfIo[cfg0].update.x.val[1], err[1]);
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][2], ukfIo[cfg0].update.x.val[2], err[2]);
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][3], ukfIo[cfg0].update.x.val[3], err[3]);
+            /*
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][0], ukfIo.update.x.val[0], err[0]);
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][1], ukfIo.update.x.val[1], err[1]);
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][2], ukfIo.update.x.val[2], err[2]);
+            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][3], ukfIo.update.x.val[3], err[3]);
+            */
 
             //accumulate the differennce between reference matlab implementation and results from C code execution
             absErrAccum[0] += err[0];
@@ -119,60 +119,29 @@ void ukf_test(void) {
             absErrAccum[3] += err[3];
         }
 
-        printf("Accumluated error: CFG0 \n");
-        printf("%2.16f  \n%2.16f  \n%2.16f  \n%2.16f \n", absErrAccum[0], absErrAccum[1], absErrAccum[2], absErrAccum[3]);
-
-        //UKF simulation CFG0: END
-    } else {
-        //initialization fail
-    }
-
-    //UKF initialization: CFG1(free pendulum)
-    tfInitCfg1 = ukf_init(&ukfIo[cfg1], &UkfMatrixCfg1);
-
-    if (tfInitCfg1 == 0) {
-        static float64 tetha = 0.5;    //initial conditions for angle
-        static float64 tetha_dot = 0;  //initial conditions for angle speed
-        const float64 B = 0.05;        //kg*s/m
-        const float64 l = 0.613;
-        const float64 m = 0.5;
-        const float64 g = 9.81;
-        static const float64 T0 = 0.0001;
-        float64 absErrAccum[2] = {0, 0};
-
-        //UKF simulation: BEGIN
-        printf("Loop | system states : real | system states : est | system states : err \n");
-        for (simLoop = 0; simLoop < 70; simLoop++) {
-            float64* const py_cfg1 = ukfIo[cfg1].input.y.val;
-            float64 err[2] = {0, 0};
-
-            //UKF:CFG1 apply/load system measurements in working array for current iteration
-
-            tetha = tetha + T0 * tetha_dot;
-            tetha_dot = tetha_dot - ((T0 * B * tetha_dot) / m) - ((T0 * g) / l) * sin(tetha);
-
-            py_cfg1[0] = tetha;
-
-            //UKF:CFG0 periodic task call
-            (void)ukf_step(&ukfIo[cfg1]);
-
-            err[0] = fabs(ukfIo[cfg1].update.x.val[0] - tetha);
-            err[1] = fabs(ukfIo[cfg1].update.x.val[1] - tetha_dot);
-
-            //accumulate the differennce between reference matlab implementation and results from C code execution
-            absErrAccum[0] += err[0];
-            absErrAccum[1] += err[1];
-
-            printf("% -3.5f % -3.5f % -3.14f\n", tetha,     ukfIo[1].update.x.val[0], err[0]);
-            printf("% -3.5f % -3.5f % -3.14f\n", tetha_dot, ukfIo[1].update.x.val[1], err[1]);
+        printf("Checking accumulated error values for estimated values: \n");
+        if (fabs(absErrAccum[0]) > UKF_TEST_EPS) { 
+            printf("ERROR: Accumulated error absErrAccum[0] is too big: %.6e > %.6e\n", absErrAccum[0], UKF_TEST_EPS); 
+        } else {
+            printf("1. SUCCESS! %.6e < %.6e\n", absErrAccum[0], UKF_TEST_EPS); 
+        } 
+        if (fabs(absErrAccum[1]) > UKF_TEST_EPS) { 
+            printf("ERROR: Accumulated error absErrAccum[1] is too big: %.6e > %.6e\n", absErrAccum[1], UKF_TEST_EPS); 
+        } else {
+            printf("2. SUCCESS! %.6e < %.6e\n", absErrAccum[1], UKF_TEST_EPS); 
         }
-        
-        printf("Accumulated error: CFG1 \n");
-        printf("%2.16f  \n%2.16f\n", absErrAccum[0], absErrAccum[1]);
+        if (fabs(absErrAccum[2]) > UKF_TEST_EPS) { 
+            printf("ERROR: Accumulated error absErrAccum[2] is too big: %.6e > %.6e\n", absErrAccum[2], UKF_TEST_EPS); 
+        } else {
+            printf("3. SUCCESS! %.6e < %.6e\n", absErrAccum[2], UKF_TEST_EPS); 
+        }
+        if (fabs(absErrAccum[3]) > UKF_TEST_EPS) { 
+            printf("ERROR: Accumulated error absErrAccum[3] is too big: %.6e > %.6e\n", absErrAccum[3], UKF_TEST_EPS); 
+        } else {
+            printf("4. SUCCESS! %.6e < %.6e\n", absErrAccum[3], UKF_TEST_EPS); 
+        }
 
-        //UKF simulation: END
     } else {
-        //initialization fail
-        //TBD
+        printf("initialization fail\n");
     }
 }
