@@ -15,7 +15,6 @@
 #define cfg1 (uint8)1
 
 void ukf_test(void);
-void mtxlib_test(void);
 
 int main(void) {
     clock_setup();
@@ -23,9 +22,6 @@ int main(void) {
     usart_setup();
 
     printf("App STARTED\n");
-
-    //generic matrix operation test
-    mtxlib_test();
 
     //UKF test start here
     ukf_test();
@@ -179,155 +175,4 @@ void ukf_test(void) {
         //initialization fail
         //TBD
     }
-}
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***      void mtxlib_test(void)
- *** 
- ***  DESCRIPTION:
- ***      Test some generic matrix operations from mtxLib.c      
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      void
- ***  RETURNS:
- ***      void
- ***
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
-void mtxlib_test(void) {
-    /*------------------------------------------------*/
-    /*             Sample Matrix not related with UKF */
-    /*------------------------------------------------*/
-    static float64 symMtx[5][5] =
-        {{3.009964742796415, -1.009481719676593, 1.161774056277037, -0.291928007896218, -0.775215823251770},
-         {-1.009481719676593, 3.009964742796415, -1.009481719676593, 1.161774056277037, -0.291928007896218},
-         {1.161774056277037, -1.009481719676593, 3.009964742796415, -1.009481719676593, 1.161774056277037},
-         {-0.291928007896218, 1.161774056277037, -1.009481719676593, 3.009964742796415, -1.009481719676593},
-         {-0.775215823251770, -0.291928007896218, 1.161774056277037, -1.009481719676593, 3.009964742796415}};
-
-    static float64 symMtxChol[5][5] =
-        {{1.734924996302842, -0.581858997840148, 0.669639355449256, -0.168265491890613, -0.446829589119858},
-         {0.0,                1.634443284249678, -0.379239855780691, 0.650904975441148, -0.337680621986338},
-         {0.0,                0.0,                1.554903536627710, -0.418003689501540, 0.857240820764834},
-         {0.0,                0.0,                0.0,               1.543776893059448, -0.328117294491480},
-         {0.0,                0.0,                0.0,               0.0,               1.361527478565284}};
-
-    static float64 Identity_5x5[4][4] =
-        {{1.0, 0.0, 0.0, 0.0},
-         {0.0, 1.0, 0.0, 0.0},
-         {0.0, 0.0, 1.0, 0.0},
-         {0.0, 0.0, 0.0, 1.0}};
-
-    static float64 TestMatrix_0_4x4[4][4] =
-        {{3.0, 5.0, -1.0, -4},
-         {1.0, 4.0, -0.7, -3},
-         {0.0, -2.0, 0.0,  1},
-         {-2.0, 6.0, 0.0, 0.3}};
-
-    static float64 TestMatrix_1_5x5[5][5];
-    
-    /*
-    static float64 TestMatrix_2_3x3[3][3] = 
-        {{1.11, 29.3, 31.2},
-        {45.3, 5.17, 6.11},
-        {7.61, 88.0, 9.34}};
-    */
-
-    static float64 TestMatrix_1_2x3[2][3] =
-        {{1.11, 29.3, 31.2},
-        {45.3, 5.17, 6.11}};
-
-    static float64 TestMatrixDest_3x2[3][2] =
-        {{0.0, 0.0},
-        {0.0, 0.0},
-        {0.0, 0.0}};
-
-    tMatrix myFactMatrix;
-    tMatrix myTestMatx;
-    tMatrix myChol;
-    tMatrix Im;
-    tMatrix oTestMatrix_0_4x4;
-    tMatrix oTestMatrixDest_3x2;
-    tMatrix mtrx_5x5;
-
-    mtx_init_f64(&myTestMatx, 
-        &TestMatrix_1_2x3[0][0], 
-        NROWS(TestMatrix_1_2x3), 
-        NCOL(TestMatrix_1_2x3), 
-        COLXROW(TestMatrix_1_2x3));
-
-    mtx_init_f64(&myChol, 
-        &symMtxChol[0][0], 
-        NROWS(symMtxChol), 
-        NCOL(symMtxChol), 
-        COLXROW(symMtxChol));
-
-    mtx_init_f64(&Im, 
-        &Identity_5x5[0][0], 
-        NROWS(Identity_5x5), 
-        NCOL(Identity_5x5), 
-        COLXROW(Identity_5x5));
-
-    mtx_init_f64(&oTestMatrix_0_4x4, 
-        &TestMatrix_0_4x4[0][0], 
-        NROWS(TestMatrix_0_4x4), 
-        NCOL(TestMatrix_0_4x4), 
-        COLXROW(TestMatrix_0_4x4));
-
-    mtx_init_f64(&oTestMatrixDest_3x2, 
-        &TestMatrixDest_3x2[0][0], 
-        NROWS(TestMatrixDest_3x2), 
-        NCOL(TestMatrixDest_3x2), 
-        COLXROW(TestMatrixDest_3x2));
-
-    mtx_init_f64(&myFactMatrix, 
-        &symMtx[0][0], 
-        NROWS(symMtx), 
-        NCOL(symMtx), 
-        COLXROW(symMtx));
-
-    mtx_init_f64(&mtrx_5x5, 
-        &TestMatrix_1_5x5[0][0], 
-        NROWS(TestMatrix_1_5x5), 
-        NCOL(TestMatrix_1_5x5), 
-        COLXROW(TestMatrix_1_5x5));
-
-    printf("TESTING Lower Cholesky decomposition.\n");
-    printf("A\n");
-    mtx_print_f64(&myFactMatrix);
-    mtx_chol_lower_f64(&myFactMatrix);
-    printf("sqrt(A)\n");
-    mtx_print_f64(&myFactMatrix);
-    printf("sqrt(A) * sqrt(A)' = A\n");
-    mtx_mul_src2tr_f64(&myFactMatrix, &myFactMatrix, &mtrx_5x5);
-    mtx_print_f64(&mtrx_5x5);
-
-    /* TODO: Implement other tests */
-
-    /*
-    printf("This two matrices below should be transposed.\n");
-    mtx_print_f64(&myChol);
-    mtx_transp_square_f64(&myChol);
-    mtx_print_f64(&myChol);
-
-    printf("Matrix inverse:\n");
-    mtx_print_f64(&Im);
-    mtx_print_f64(&oTestMatrix_0_4x4);
-    mtx_inv_f64(&oTestMatrix_0_4x4, &Im);
-    mtx_print_f64(&Im);
-
-    printf("Identity matrix:\n");
-    mtx_identity_f64(&Im);
-    mtx_print_f64(&Im);
-
-    printf("Matrix transpose:\n");
-    mtx_print_f64(&myTestMatx);
-    mtx_transp_dest_f64(&myTestMatx,&oTestMatrixDest_3x2);
-    mtx_print_f64(&oTestMatrixDest_3x2);
-    */
-
-    return;
 }
