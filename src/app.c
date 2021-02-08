@@ -119,7 +119,7 @@ void ukf_test(void) {
             absErrAccum[3] += err[3];
         }
 
-        printf("Checking accumulated error values for estimated values: \n");
+        printf("Accumulated error between ukf.m and ukf.c \n");
         if (fabs(absErrAccum[0]) > UKF_TEST_EPS) { 
             printf("ERROR: Accumulated error absErrAccum[0] is too big: %.6e > %.6e\n", absErrAccum[0], UKF_TEST_EPS); 
         } else {
