@@ -19,4 +19,4 @@ Debugging with the Renode emulator.
 Position yourself in root dir and run `make start_renode`
 
 ## License
-MIT license. See LICENSE.md file.
+MIT license. See LICENSE file.
