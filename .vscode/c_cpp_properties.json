@@ -4,7 +4,7 @@
             "name": "arm",
             "includePath": [
                 "src",
-                "libopencm3/include"
+                "lib/libopencm3/include"
             ],
             "compilerPath": "/usr/bin/arm-none-eabi-gcc",
             "defines": [
