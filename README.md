@@ -6,10 +6,11 @@ Project written in VSCode. Debugging with the Renode emulator.
 Install arm-none-eabi-gcc toolchain and add to path.
 Install Renode and add to path.
 Clone the repository.
+Update git submodules.
 Open root dir with VSCode.
 
 ## Building
 Run make.
 
 ## Testing
-Run make test_renode.
+Run make start_renode.
