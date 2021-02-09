@@ -4,14 +4,15 @@ Project written in VSCode.
 Debugging with the Renode emulator.
 
 ## Install
-Install arm-none-eabi-gcc toolchain and add to path.  
-Install Renode and add to path.  
-Clone the repository.  
-Update git submodules.  
-Open root dir with VSCode.  
+- Install arm-none-eabi-gcc toolchain and add to path. LINKhttps://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads  
+- Install Renode and add to path. LINK https://renode.io/  
+- Clone project `git clone https://github.com/IvanVnucec/UKF_STM32F4`
+- Go into root directory `cd UKF_STM32F4`
+- Pull Git submodules `git submodule update --init --recursive`
+- Open with VSCode `code .`
 
 ## Building
-Run make.
+- Position yourself in root dir and run `make`
 
 ## Testing
-Run make start_renode.
+Position yourself in root dir and run `make start_renode`
