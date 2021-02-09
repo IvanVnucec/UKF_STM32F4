@@ -2,6 +2,7 @@
 
 PROJECT = renode-example
 BUILD_DIR = build
+LIB_DIR = lib
 Q ?= @
 
 CC = arm-none-eabi-gcc
@@ -64,7 +65,7 @@ MATH_LIB = -lm
 
 LDFLAGS_APP = $(LDFLAGS) -T stm32f429i-discovery.ld
 
-OPENCM3_PATH = ./libopencm3
+OPENCM3_PATH = $(LIB_DIR)/libopencm3
 OPENCM3_INCLUDES = $(OPENCM3_PATH)/include
 OPENCM3_LIB = $(OPENCM3_PATH)/lib/libopencm3_stm32f4.a
 
