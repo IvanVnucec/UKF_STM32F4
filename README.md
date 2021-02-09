@@ -18,5 +18,9 @@ Debugging with the Renode emulator.
 ## Testing
 Position yourself in root dir and run `make start_renode`
 
+
+## Acknowledge
+Special thanks to [ivo-georgiev](https://github.com/ivo-georgiev) for his [UKF Library](https://github.com/ivo-georgiev/ukfLib).
+
 ## License
 MIT license. See LICENSE file.
