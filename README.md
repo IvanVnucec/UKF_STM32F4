@@ -1,4 +1,5 @@
 # UKFilter_STM32F4
+## About
 Unscented Kalman filter for STM32F4 microcontroller implemented in C.  
 Project written in VSCode.  
 Debugging with the Renode emulator.
@@ -16,3 +17,6 @@ Debugging with the Renode emulator.
 
 ## Testing
 Position yourself in root dir and run `make start_renode`
+
+## License
+MIT license. See LICENSE.md file.
