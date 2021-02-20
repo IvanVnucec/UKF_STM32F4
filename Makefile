@@ -74,7 +74,7 @@ CFLAGS += $(foreach i,$(INCLUDES),-I$(i))
 CFLAGS += $(foreach d,$(DEFINES),-D$(d))
 LDSCRIPT = stm32f429i-discovery.ld
 
-.PHONY: all test_docker test_local renode
+.PHONY: all
 all: $(BUILD_DIR)/$(PROJECT).elf
 
 $(BUILD_DIR)/$(PROJECT).elf: $(SRCS_APP) $(OPENCM3_LIB)
@@ -82,25 +82,20 @@ $(BUILD_DIR)/$(PROJECT).elf: $(SRCS_APP) $(OPENCM3_LIB)
 	$(Q)$(MKDIR) -p $(BUILD_DIR)
 	$(Q)$(CC) $(CFLAGS) $(LDFLAGS_APP) $^ -o $@ $(MATH_LIB)
 
-$(RENODE_REPO):
-	$(ECHO) "renode not found, cloning it..."
-	$(Q)$(GIT) clone https://github.com/renode/renode.git 2>1
-
 $(OPENCM3_LIB):
 	$(ECHO) "Building libopencm3"
 	$(Q)$(MAKE) -s -C $(OPENCM3_PATH) TARGETS=stm32/f4
 
-test_docker:
-	./docker-test.sh
+.PHONY: test
+test: $(BUILD_DIR)/$(PROJECT).elf
+	./test.sh
 
-test_local: $(RENODE_REPO)
-	./run_tests.sh
-
-start_renode: $(BUILD_DIR)/$(PROJECT).elf
-	./start.sh
+.PHONY: help
+help: 
+	$(ECHO) "all - make all"
+	$(ECHO) "test - make all and run Renode test"
 
 .PHONY: clean
 clean:
 	$(ECHO) "  CLEAN		rm -rf $(BUILD_DIR)"
 	$(Q)rm -rf $(BUILD_DIR)
-	$(Q)make -C $(OPENCM3_PATH) TARGETS=stm32/f4 clean

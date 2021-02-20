@@ -52,23 +52,23 @@ static void Fx4(tMatrix* pu_p, tMatrix* pX_p, tMatrix* pX_m, uint8 sigmaIdx, flo
 static void Hy1(tMatrix* pu, tMatrix* pX_m, tMatrix* pY_m, uint8 sigmaIdx);
 static void Hy2(tMatrix* pu, tMatrix* pX_m, tMatrix* pY_m, uint8 sigmaIdx);
 
-static tPredictFcn PredictFcn[4] = {&Fx1, &Fx2, &Fx3, &Fx4};
-static tObservFcn ObservFcn[2] = {&Hy1, &Hy2};
+static tPredictFcn PredictFcn[Lx] = {&Fx1, &Fx2, &Fx3, &Fx4};
+static tObservFcn ObservFcn[Ly] = {&Hy1, &Hy2};
 
 //-----------------------
 //UKF Processing matrix
 //-----------------------
 static float64 Sc_vector[1][3] = {{1, 2, 0}};
-static float64 Wm_weight_vector[1][9] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}};
-static float64 Wc_weight_vector[1][9] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}};
+static float64 Wm_weight_vector[1][2*Lx + 1] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}};
+static float64 Wc_weight_vector[1][2*Lx + 1] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}};
 //static float64 u_system_input[4][1] = {{0},{0},{0},{0}};
 //static float64 u_prev_system_input[4][1] = {{0},{0},{0},{0}};
-static float64 y_meas[2][1] = {{0}, {0}};
-static float64 y_predicted_mean[2][1] = {{0}, {0}};
-static float64 x_system_states[4][1] = {{0}, {0}, {50}, {50}};
-static float64 x_system_states_ic[4][1] = {{0}, {0}, {50}, {50}};
-static float64 x_system_states_correction[4][1] = {{0}, {0}, {0}, {0}};
-static float64 X_sigma_points[4][9] =
+static float64 y_meas[Ly][1] = {{0}, {0}};
+static float64 y_predicted_mean[Ly][1] = {{0}, {0}};
+static float64 x_system_states[Lx][1] = {{0}, {0}, {50}, {50}};
+static float64 x_system_states_ic[Lx][1] = {{0}, {0}, {50}, {50}};
+static float64 x_system_states_correction[Lx][1] = {{0}, {0}, {0}, {0}};
+static float64 X_sigma_points[Lx][2*Lx + 1] =
     {
         /*  s1  s2  s3  s4  s5  s6  s7  s8  s9        */
         {0, 0, 0, 0, 0, 0, 0, 0, 0}, /* x1 */
@@ -78,7 +78,7 @@ static float64 X_sigma_points[4][9] =
 };
 
 //Sigma points Y(k|k-1) = y_m
-static float64 Y_sigma_points[2][9] =
+static float64 Y_sigma_points[Ly][2*Lx + 1] =
     {
         /*  s1  s2  s3  s4  s5  s6  s7  s8  s9        */
         {0, 0, 0, 0, 0, 0, 0, 0, 0}, /* y1 */
@@ -86,7 +86,7 @@ static float64 Y_sigma_points[2][9] =
 };
 
 //State covariance  P(k|k-1) = P_m, P(k)= P
-static float64 Pxx_error_covariance[4][4] =
+static float64 Pxx_error_covariance[Lx][Lx] =
     {
         /*  x1, x2, x3, x4        */
         {0, 0, 0, 0}, /* x1 */
@@ -103,7 +103,7 @@ static float64 Pxx_error_covariance[4][4] =
   This is almost never the case.  Many times the P0 matrix is diagonal, with the diagonal components corresponding to the expected variance
   in the corresponding state, i.e. how much deviation you might expect in the initialization of that state.  If you have no idea where to start, 
  I recommend using an identity matrix rather than the zero matrix. */
-static float64 Pxx0_init_error_covariance[4][4] =
+static float64 Pxx0_init_error_covariance[Lx][Lx] =
     {
         /*  x1, x2, x3, x4        */
         {1, 0, 0, 0}, /* x1 */
@@ -118,7 +118,7 @@ static float64 Pxx0_init_error_covariance[4][4] =
   Some formulations consider input measurements in the state equations which introduces process noise.
   If you are very confident in your equations, you could set Q to zero. If you do that the filter will use
   the noise free model to predict the state vector and will ignore any measurement data since your model is assumed perfect. */
-static float64 Qxx_process_noise_cov[4][4] =
+static float64 Qxx_process_noise_cov[Lx][Lx] =
     {
         /*  x1, x2, x3, x4        */
         {0, 0, 0, 0}, /* x1 */
@@ -128,7 +128,7 @@ static float64 Qxx_process_noise_cov[4][4] =
 };
 
 //Output noise covariance: initial noise assumptions
-static float64 Ryy0_init_out_covariance[2][2] =
+static float64 Ryy0_init_out_covariance[Ly][Ly] =
     {
         /*  y1, y2         */
         {1, 0}, /* y1 */
@@ -136,14 +136,14 @@ static float64 Ryy0_init_out_covariance[2][2] =
 };
 
 //Output covariance Pyy = R (initial assumption)
-static float64 Pyy_out_covariance[2][2] =
+static float64 Pyy_out_covariance[Ly][Ly] =
     {
         /*  y1, y2         */
         {0, 0}, /* y1 */
         {0, 0}, /* y2 */
 };
 
-static float64 Pyy_out_covariance_copy[2][2] =
+static float64 Pyy_out_covariance_copy[Ly][Ly] =
     {
         /*  y1, y2         */
         {0, 0}, /* y1 */
@@ -151,7 +151,7 @@ static float64 Pyy_out_covariance_copy[2][2] =
 };
 
 //cross-covariance of state and output
-static float64 Pxy_cross_covariance[4][2] =
+static float64 Pxy_cross_covariance[Lx][Ly] =
     {
         /*  y1, y2         */
         {0, 0}, /* x1 */
@@ -161,7 +161,7 @@ static float64 Pxy_cross_covariance[4][2] =
 };
 
 //Kalman gain matrix
-static float64 K_kalman_gain[4][2] =
+static float64 K_kalman_gain[Lx][Ly] =
     {
         {0, 0},
         {0, 0},
@@ -169,7 +169,7 @@ static float64 K_kalman_gain[4][2] =
         {0, 0},
 };
 
-static float64 Pxx_covariance_correction[4][4] =
+static float64 Pxx_covariance_correction[Lx][Lx] =
     {
         /*  x1, x2, x3, x4        */
         {0, 0, 0, 0}, /* x1 */
@@ -178,7 +178,7 @@ static float64 Pxx_covariance_correction[4][4] =
         {0, 0, 0, 0}, /* x4 */
 };
 
-static float64 I_identity_matrix[2][2] =
+static float64 I_identity_matrix[Ly][Ly] =
     {
         {0, 0},
         {0, 0},
