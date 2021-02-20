@@ -2,17 +2,17 @@
 #define UKFLIB_FILE
 
 #include <stdint.h>
+#include <stdio.h>
 #include "math.h"
 #include "mtxLib.h"
-#include <stdio.h>
 
-#define xMinIdx (uint8_t)0
-#define xMaxIdx (uint8_t)1
-#define xEpsIdx (uint8_t)2
+#define xMinIdx (0u)
+#define xMaxIdx (1u)
+#define xEpsIdx (2u)
 
-#define alphaIdx (uint8_t)0
-#define bethaIdx (uint8_t)1
-#define kappaIdx (uint8_t)2
+#define alphaIdx (0u)
+#define bethaIdx (1u)
+#define kappaIdx (2u)
 
 typedef void (*tPredictFcn)(tMatrix* pu_p, tMatrix* px_p, tMatrix* pX_m, uint8_t sigmaIdx, float dT);
 typedef void (*tObservFcn)(tMatrix* pu, tMatrix* pX_m, tMatrix* pY_m, uint8_t sigmaIdx);
@@ -40,7 +40,6 @@ typedef struct ukfMatrix {
     tMatrix Pxx0_init_error_covariance;
     tMatrix Qxx_process_noise_cov;
     tMatrix K_kalman_gain;
-    //tMatrix K_kalman_gain_transp;
     tMatrix I_identity_matrix;
     tMatrix Pxx_covariance_correction;
     tPredictFcn* fcnPredict;
@@ -111,7 +110,7 @@ typedef struct uKF {
     tUKFupdate update;
 } tUKF;
 
-uint8_t ukf_init(tUKF* const pUkf, tUkfMatrix* pUkfMatrix);
-void ukf_step(tUKF* const pUkf);
+uint8_t ukf_init(tUKF *pUkf, tUkfMatrix *pUkfMatrix);
+void    ukf_step(tUKF *pUkf);
 
 #endif

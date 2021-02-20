@@ -13,42 +13,6 @@
  * @brief 
  * 
  * @param pSrc 
- * @param pValue 
- * @param nrow 
- * @param ncol 
- * @param nelem 
- * @return mtxResultInfo 
- */
-mtxResultInfo mtx_init_bool(tMatrixBool *const pSrc, uint8_t *const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem) {
-    pSrc->val = pValue;
-    pSrc->ncol = ncol;
-    pSrc->nrow = nrow;
-    pSrc->nelem = nelem;
-    return MTX_OPERATION_OK;
-}
-
-/**
- * @brief 
- * 
- * @param pSrc 
- * @param pValue 
- * @param nrow 
- * @param ncol 
- * @param nelem 
- * @return mtxResultInfo 
- */
-mtxResultInfo mtx_init(tMatrix *const pSrc, float *const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem) {
-    pSrc->val = pValue;
-    pSrc->ncol = ncol;
-    pSrc->nrow = nrow;
-    pSrc->nelem = nelem;
-    return MTX_OPERATION_OK;
-}
-
-/**
- * @brief 
- * 
- * @param pSrc 
  * @param diagsum 
  * @return mtxResultInfo 
  */
@@ -58,9 +22,10 @@ mtxResultInfo mtx_diagsum(tMatrix *pSrc, float *diagsum) {
     const uint8_t ncol = pSrc->ncol;
     uint16_t eIdx;
     float sum = pSrcL[0];
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
     if (pSrc->nrow == ncol) {
-        for (eIdx = 1; eIdx < pSrc->nelem; eIdx++) {
+        for (eIdx = 1; eIdx < nelem; eIdx++) {
             const uint16_t cmpLeft = (uint16_t)(eIdx / ncol);
 
             sum += eIdx < ncol ? 0 : cmpLeft == eIdx % (cmpLeft * ncol) ? pSrcL[eIdx]
@@ -81,7 +46,7 @@ mtxResultInfo mtx_diagsum(tMatrix *pSrc, float *diagsum) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_transp_square(tMatrix *const pSrc) {
+mtxResultInfo mtx_transp_square(tMatrix *pSrc) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     const uint8_t nrow = pSrc->nrow;
     const uint8_t ncol = pSrc->ncol;
@@ -113,7 +78,7 @@ mtxResultInfo mtx_transp_square(tMatrix *const pSrc) {
  * @param pDst 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_transp_dest(tMatrix const *const pSrc, tMatrix *const pDst) {
+mtxResultInfo mtx_transp_dest(const tMatrix *pSrc, tMatrix *pDst) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float const *const pSrcL = (float *)pSrc->val;
     float *const pDstL = (float *)pDst->val;
@@ -144,7 +109,7 @@ mtxResultInfo mtx_transp_dest(tMatrix const *const pSrc, tMatrix *const pDst) {
  * @param pDst 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_mul(tMatrix const *const pSrc1, tMatrix const *const pSrc2, tMatrix *const pDst) {
+mtxResultInfo mtx_mul(const tMatrix *pSrc1, const tMatrix *pSrc2, tMatrix *pDst) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float const *const pSrc1L = (float *)pSrc1->val;
     float const *const pSrc2L = (float *)pSrc2->val;
@@ -180,7 +145,7 @@ mtxResultInfo mtx_mul(tMatrix const *const pSrc1, tMatrix const *const pSrc2, tM
  * @param pDst 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_mul_src2tr(tMatrix const *const pSrc1, tMatrix const *const pSrc2, tMatrix *const pDst) {
+mtxResultInfo mtx_mul_src2tr(const tMatrix *pSrc1, const tMatrix *pSrc2, tMatrix *pDst) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float const *const pSrc1L = (float *)pSrc1->val;
     float const *const pSrc2L = (float *)pSrc2->val;
@@ -211,7 +176,7 @@ mtxResultInfo mtx_mul_src2tr(tMatrix const *const pSrc1, tMatrix const *const pS
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_chol_lower(tMatrix *const pSrc) {
+mtxResultInfo mtx_chol_lower(tMatrix *pSrc) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float *const pSrcL = pSrc->val;
     const uint8_t nrow = pSrc->nrow;
@@ -252,7 +217,7 @@ mtxResultInfo mtx_chol_lower(tMatrix *const pSrc) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_chol_upper(tMatrix *const pSrc) {
+mtxResultInfo mtx_chol_upper(tMatrix *pSrc) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float *const pSrcL = pSrc->val;
     const uint8_t nrow = pSrc->nrow;
@@ -294,7 +259,7 @@ mtxResultInfo mtx_chol_upper(tMatrix *const pSrc) {
  * @note  
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_inv(tMatrix *const pSrc, tMatrix *const pDst) {
+mtxResultInfo mtx_inv(tMatrix *pSrc, tMatrix *pDst) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     const uint8_t nrow = pSrc->nrow;
     const uint8_t ncol = pSrc->ncol;
@@ -359,14 +324,15 @@ mtxResultInfo mtx_inv(tMatrix *const pSrc, tMatrix *const pDst) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_add(tMatrix *const pDst, tMatrix const *const pSrc) {
+mtxResultInfo mtx_add(tMatrix *pDst, const tMatrix *pSrc) {
     uint8_t Result = MTX_OPERATION_OK;
     float *const pDstL = (float *)pDst->val;
     float const *const pSrcL = (float *)pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
     if (pDst->ncol == pSrc->ncol && pDst->nrow == pSrc->nrow) {
-        for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+        for (eIdx = 0; eIdx < nelem; eIdx++) {
             pDstL[eIdx] += pSrcL[eIdx];
         }
     } else {
@@ -383,14 +349,15 @@ mtxResultInfo mtx_add(tMatrix *const pDst, tMatrix const *const pSrc) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_sub(tMatrix *const pDst, tMatrix const *const pSrc) {
+mtxResultInfo mtx_sub(tMatrix *pDst, const tMatrix *pSrc) {
     uint8_t Result = MTX_OPERATION_OK;
     float *const pDstL = (float *)pDst->val;
     float const *const pSrcL = (float *)pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
     if (pDst->ncol == pSrc->ncol && pDst->nrow == pSrc->nrow) {
-        for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+        for (eIdx = 0; eIdx < nelem; eIdx++) {
             pDstL[eIdx] -= pSrcL[eIdx];
         }
     } else {
@@ -407,12 +374,13 @@ mtxResultInfo mtx_sub(tMatrix *const pDst, tMatrix const *const pSrc) {
  * @param scalar 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_mul_scalar(tMatrix *const pSrc, const float scalar) {
+mtxResultInfo mtx_mul_scalar(tMatrix *pSrc, float scalar) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
-    for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+    for (eIdx = 0; eIdx < nelem; eIdx++) {
         pDst[eIdx] *= scalar;
     }
 
@@ -426,12 +394,13 @@ mtxResultInfo mtx_mul_scalar(tMatrix *const pSrc, const float scalar) {
  * @param scalar 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_sub_scalar(tMatrix *const pSrc, const float scalar) {
+mtxResultInfo mtx_sub_scalar(tMatrix *pSrc, float scalar) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
-    for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+    for (eIdx = 0; eIdx < nelem; eIdx++) {
         pDst[eIdx] -= scalar;
     }
 
@@ -445,12 +414,13 @@ mtxResultInfo mtx_sub_scalar(tMatrix *const pSrc, const float scalar) {
  * @param scalar 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_add_scalar(tMatrix *const pSrc, const float scalar) {
+mtxResultInfo mtx_add_scalar(tMatrix *pSrc, float scalar) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
-    for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+    for (eIdx = 0; eIdx < nelem; eIdx++) {
         pDst[eIdx] += scalar;
     }
 
@@ -464,14 +434,15 @@ mtxResultInfo mtx_add_scalar(tMatrix *const pSrc, const float scalar) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_cpy(tMatrix *const pDst, tMatrix const *const pSrc) {
+mtxResultInfo mtx_cpy(tMatrix *pDst, const tMatrix *pSrc) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDstL = pDst->val;
     float const *const pSrcL = pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
     if (pDst->ncol == pSrc->ncol && pDst->nrow == pSrc->nrow) {
-        for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+        for (eIdx = 0; eIdx < nelem; eIdx++) {
             pDstL[eIdx] = pSrcL[eIdx];
         }
     } else {
@@ -487,16 +458,17 @@ mtxResultInfo mtx_cpy(tMatrix *const pDst, tMatrix const *const pSrc) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_identity(tMatrix *const pSrc) {
+mtxResultInfo mtx_identity(tMatrix *pSrc) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = (float *)pSrc->val;
     const uint8_t nCol = pSrc->ncol;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
     if (pSrc->nrow == nCol) {
         pDst[0] = 1;
 
-        for (eIdx = 1; eIdx < pSrc->nelem; eIdx++) {
+        for (eIdx = 1; eIdx < nelem; eIdx++) {
             const uint16_t cmpLeft = (uint16_t)(eIdx / nCol);
 
             /* TODO: Optimize this so we initialize matrix to all zeros and then with
@@ -517,12 +489,13 @@ mtxResultInfo mtx_identity(tMatrix *const pSrc) {
  * @param pSrc 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_zeros(tMatrix *const pSrc) {
+mtxResultInfo mtx_zeros(tMatrix *pSrc) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = (float *)pSrc->val;
     uint16_t eIdx;
+    const uint16_t nelem = pSrc->ncol * pSrc->nrow;
 
-    for (eIdx = 0; eIdx < pSrc->nelem; eIdx++) {
+    for (eIdx = 0; eIdx < nelem; eIdx++) {
         pDst[eIdx] = 0;
     }
 
@@ -535,7 +508,7 @@ mtxResultInfo mtx_zeros(tMatrix *const pSrc) {
  * @param A 
  * @return mtxResultInfo 
  */
-mtxResultInfo mtx_print(tMatrix const *A) {
+mtxResultInfo mtx_print(const tMatrix *A) {
     int i, j;
     mtxResultInfo Result = MTX_OPERATION_OK;
 

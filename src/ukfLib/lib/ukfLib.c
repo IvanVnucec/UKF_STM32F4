@@ -8,13 +8,13 @@
 #include "ukfLib.h"
 #include <stdint.h>
 
-static uint8_t ukf_dimension_check(tUKF *const pUkf);
-static void ukf_meas_update(tUKF *const pUkf);
-static void ukf_sigmapoint(tUKF *const pUkf);
-static void ukf_mean_pred_state(tUKF *const pUkf);
-static void ukf_mean_pred_output(tUKF *const pUkf);
-static void ukf_calc_covariances(tUKF *const pUkf);
-static float ukf_state_limiter(const float state, const float min, const float max, const uint8_t enbl);
+static uint8_t  ukf_dimension_check (tUKF *pUkf);
+static void     ukf_meas_update     (tUKF *pUkf);
+static void     ukf_sigmapoint      (tUKF *pUkf);
+static void     ukf_mean_pred_state     (tUKF *pUkf);
+static void     ukf_mean_pred_output    (tUKF *pUkf);
+static void     ukf_calc_covariances    (tUKF *pUkf);
+static float    ukf_state_limiter(float state, float min, float max, uint8_t enbl);
 
 /**
  * @brief Clamp system states in permitted range  
@@ -51,7 +51,7 @@ static float ukf_state_limiter(const float state, const float min, const float m
  * 0 := OK
  * 1 := NOK
  */
-static uint8_t ukf_dimension_check(tUKF *const pUkf) {
+static uint8_t ukf_dimension_check(tUKF *pUkf) {
     const uint8_t stateLen = pUkf->par.xLen;
     //const uint8_t  measLen = pUkf->par.yLen;
     const uint8_t sigmaLen = pUkf->par.sLen;
@@ -187,7 +187,7 @@ static uint8_t ukf_dimension_check(tUKF *const pUkf) {
  * @param pUkfMatrix UKF - Structure with all filter matrix
  * @return uint8_t 
  */
-uint8_t ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
+uint8_t ukf_init(tUKF *pUkf, tUkfMatrix *pUkfMatrix) {
     uint8_t xIdx;
     tUKFpar *const pPar = (tUKFpar *)&pUkf->par;
     tUKFprev *const pPrev = (tUKFprev *)&pUkf->prev;
@@ -304,7 +304,7 @@ uint8_t ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
  * 
  * @param pUkf UKF - Working structure with reference to all in,out,states,par
  */
-void ukf_step(tUKF *const pUkf) {
+void ukf_step(tUKF *pUkf) {
     ukf_sigmapoint(pUkf);
     ukf_mean_pred_state(pUkf);
     ukf_mean_pred_output(pUkf);
@@ -331,7 +331,7 @@ void ukf_step(tUKF *const pUkf) {
  * 
  * @param pUkf UKF - Working structure with reference to all in,out,states,par
  */
-static void ukf_sigmapoint(tUKF *const pUkf) {
+static void ukf_sigmapoint(tUKF *pUkf) {
     float *const pPxx_p = pUkf->prev.Pxx_p.val;
     float *const pX_p = pUkf->prev.X_p.val;
     float *const px_p = pUkf->prev.x_p.val;
@@ -395,7 +395,7 @@ static void ukf_sigmapoint(tUKF *const pUkf) {
  * 
  * @param pUkf UKF - Working structure with reference to all in,out,states,par
  */
-static void ukf_mean_pred_state(tUKF *const pUkf) {
+static void ukf_mean_pred_state(tUKF *pUkf) {
     tUKFpar const *const pPar = (tUKFpar *)&pUkf->par;
     const uint8_t xLen = pPar->xLen;
     const uint8_t sigmaLen = pPar->sLen;
@@ -426,7 +426,7 @@ static void ukf_mean_pred_state(tUKF *const pUkf) {
  * 
  * @param pUkf UKF - Working structure with reference to all in,out,states,par
  */
-static void ukf_mean_pred_output(tUKF *const pUkf) {
+static void ukf_mean_pred_output(tUKF *pUkf) {
     tUKFpar const *const pPar = (tUKFpar *)&pUkf->par;
     float const *const pWm = pPar->Wm.val;
     float const *const pWc = pPar->Wc.val;
@@ -477,7 +477,7 @@ static void ukf_mean_pred_output(tUKF *const pUkf) {
  * 
  * @param pUkf UKF - Working structure with reference to all in,out,states,par
  */
-static void ukf_calc_covariances(tUKF *const pUkf) {
+static void ukf_calc_covariances(tUKF *pUkf) {
     tUKFpar const *const pPar = (tUKFpar *)&pUkf->par;
     float const *const pWc = pPar->Wc.val;
     float const *const pX_m = pUkf->predict.X_m.val;
@@ -528,7 +528,7 @@ static void ukf_calc_covariances(tUKF *const pUkf) {
  * 
  * @param pUkf UKF - Working structure with reference to all in,out,states,par
  */
-static void ukf_meas_update(tUKF *const pUkf) {
+static void ukf_meas_update(tUKF *pUkf) {
     tUKFupdate *const pUpdate = (tUKFupdate *)&pUkf->update;
 
     //#4.1(begin) Calculate Kalman gain:

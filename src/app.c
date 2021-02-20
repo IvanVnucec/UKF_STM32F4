@@ -29,8 +29,7 @@ int main(void) {
 
     printf("\nApp DONE\n");
 
-    while (1)
-        ;
+    while (1);
 
     return 0;
 }

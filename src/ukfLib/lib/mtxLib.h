@@ -26,37 +26,33 @@
 typedef int mtxResultInfo;
 
 typedef struct sMatrix {
-    uint16_t nelem;
     uint8_t nrow;
     uint8_t ncol;
     float* val;
 } tMatrix;
 
 typedef struct sMatrixBool {
-    uint16_t nelem;
     uint8_t nrow;
     uint8_t ncol;
     uint8_t* val;
 } tMatrixBool;
 
-mtxResultInfo mtx_init_bool(tMatrixBool* const pSrc, uint8_t* const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem);
-mtxResultInfo mtx_init(tMatrix* const pSrc, float* const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem);
-mtxResultInfo mtx_mul(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
-mtxResultInfo mtx_transp_square(tMatrix* const pSrc);
-mtxResultInfo mtx_transp_dest(tMatrix const* const pSrc, tMatrix* const pDst);
-mtxResultInfo mtx_diagsum(tMatrix* pSrc, float* diagsum);
-mtxResultInfo mtx_chol_upper(tMatrix* const pSrc);
-mtxResultInfo mtx_chol_lower(tMatrix* const pSrc);
-mtxResultInfo mtx_inv(tMatrix* const pSrc, tMatrix* const pDst);
-mtxResultInfo mtx_add(tMatrix* const pDst, tMatrix const* const pSrc);
-mtxResultInfo mtx_sub(tMatrix* const pDst, tMatrix const* const pSrc);
-mtxResultInfo mtx_mul_scalar(tMatrix* const pSrc, const float scalar);
-mtxResultInfo mtx_add_scalar(tMatrix* const pSrc, const float scalar);
-mtxResultInfo mtx_sub_scalar(tMatrix* const pSrc, const float scalar);
-mtxResultInfo mtx_cpy(tMatrix* const pDst, tMatrix const* const pSrc);
-mtxResultInfo mtx_identity(tMatrix* const pSrc);
-mtxResultInfo mtx_zeros(tMatrix* const pSrc);
-mtxResultInfo mtx_mul_src2tr(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
-mtxResultInfo mtx_print(tMatrix const *A);
+mtxResultInfo mtx_diagsum   (tMatrix *pSrc, float *diagsum);
+mtxResultInfo mtx_transp_square (tMatrix *pSrc);
+mtxResultInfo mtx_transp_dest   (const tMatrix *pSrc, tMatrix *pDst);
+mtxResultInfo mtx_mul           (const tMatrix *pSrc1, const tMatrix *pSrc2, tMatrix *pDst);
+mtxResultInfo mtx_mul_src2tr    (const tMatrix *pSrc1, const tMatrix *pSrc2, tMatrix *pDst);
+mtxResultInfo mtx_chol_lower    (tMatrix *pSrc);
+mtxResultInfo mtx_chol_upper    (tMatrix *pSrc);
+mtxResultInfo mtx_inv   (tMatrix *pSrc, tMatrix *pDst);
+mtxResultInfo mtx_add   (tMatrix *pDst, const tMatrix *pSrc);
+mtxResultInfo mtx_sub   (tMatrix *pDst, const tMatrix *pSrc);
+mtxResultInfo mtx_mul_scalar    (tMatrix *pSrc, float scalar);
+mtxResultInfo mtx_sub_scalar    (tMatrix *pSrc, float scalar);
+mtxResultInfo mtx_add_scalar    (tMatrix *pSrc, float scalar);
+mtxResultInfo mtx_cpy           (tMatrix *pDst, const tMatrix *pSrc);
+mtxResultInfo mtx_identity      (tMatrix *pSrc);
+mtxResultInfo mtx_zeros         (tMatrix *pSrc);
+mtxResultInfo mtx_print         (const tMatrix *A);
 
 #endif
