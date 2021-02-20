@@ -4,13 +4,14 @@
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #include "clock.h"
 #include "gpio.h"
 #include "ukfLib/cfg/ukfCfg.h"
 #include "usart.h"
 
-#define UKF_TEST_EPS (1e-10)
+#define UKF_TEST_EPS (1e-3)
 
 extern tUkfMatrix UkfMatrixCfg;
 
@@ -53,17 +54,17 @@ int main(void) {
  ***
 \******************************************************************************************************************************************************************************************************/
 void ukf_test(void) {
-    boolean tfInitCfg = 0;
+    uint8_t tfInitCfg = 0;
     tUKF ukfIo;
-    uint32 simLoop;
+    uint32_t simLoop;
 
     //UKF filter measurement input(data log is generated in matlab and used for UKF simulation for 15 iteration)
-    static const float64 yt[2][15] =
+    static const float yt[2][15] =
         {{0, 16.085992708563385, 12.714829185978214, 14.528500994457660, 19.105561355310275, 23.252820029388918, 29.282949862903255, 36.270058819651275, 44.244884173240955, 47.394243121124411, 55.988905459180458, 61.667450941562109, 68.624980301613647, 76.337963872393104, 82.611325690835159},  //y1 test
         {0,  16.750821420874981, 14.277640835870006, 16.320754051600520, 20.560460303503849, 24.827446289454556, 31.290961393448615, 36.853553457560210, 42.157283183453522, 49.382835230961490, 57.516319669684677, 65.664496283509095, 71.428712755732704, 79.241720894223079, 84.902760328915676}};
 
     //UKF filter expected system states calculated with matlab script for 15 iterations
-    static const float64 x_exp[15][4] =
+    static const float x_exp[15][4] =
         {/*          x1                   x2                   x3                   x4*/
          {4.901482729572258,  4.576939885855807,  49.990342921246459, 49.958134463327802},
          {10.103304943868373, 9.409135720815829,  50.226544716205318, 49.750795004242228},
@@ -85,13 +86,13 @@ void ukf_test(void) {
     tfInitCfg = ukf_init(&ukfIo, &UkfMatrixCfg);
 
     if (tfInitCfg == 0) {
-        float64 err[4] = {0, 0, 0, 0};
-        float64 absErrAccum[4] = {0, 0, 0, 0};
+        float err[4] = {0, 0, 0, 0};
+        float absErrAccum[4] = {0, 0, 0, 0};
 
         //UKF simulation CFG0: BEGIN
         //printf("ukf.m | ukf.c | diff \n");
         for (simLoop = 1; simLoop < 15; simLoop++) {
-            float64* const py_cfg = ukfIo.input.y.val;
+            float* const py_cfg = ukfIo.input.y.val;
 
             //UKF:CFG0 apply/load system measurements in working array for current iteration.
             py_cfg[0] = yt[0][simLoop];

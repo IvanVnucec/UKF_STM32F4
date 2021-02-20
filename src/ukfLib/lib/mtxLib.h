@@ -29,8 +29,8 @@
 #define MTXLIB_FILE
 
 #include <math.h>
+#include <stdint.h>
 
-#include "System_Types.h"
 /*---------------------------------------------*/
 /*         Macros definiton                    */
 /*---------------------------------------------*/
@@ -48,37 +48,37 @@
 typedef int mtxResultInfo;
 
 typedef struct sMatrix {
-    uint16 nelem;
-    uint8 nrow;
-    uint8 ncol;
-    double* val;
+    uint16_t nelem;
+    uint8_t nrow;
+    uint8_t ncol;
+    float* val;
 } tMatrix;
 
 typedef struct sMatrixBool {
-    uint16 nelem;
-    uint8 nrow;
-    uint8 ncol;
-    boolean* val;
+    uint16_t nelem;
+    uint8_t nrow;
+    uint8_t ncol;
+    uint8_t* val;
 } tMatrixBool;
 
-mtxResultInfo mtx_init_bool(tMatrixBool* const pSrc, boolean* const pValue, const uint8 nrow, const uint8 ncol, const uint16 nelem);
-mtxResultInfo mtx_init_f64(tMatrix* const pSrc, float64* const pValue, const uint8 nrow, const uint8 ncol, const uint16 nelem);
-mtxResultInfo mtx_mul_f64(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
-mtxResultInfo mtx_transp_square_f64(tMatrix* const pSrc);
-mtxResultInfo mtx_transp_dest_f64(tMatrix const* const pSrc, tMatrix* const pDst);
-mtxResultInfo mtx_diagsum_f64(tMatrix* pSrc, double* diagsum);
-mtxResultInfo mtx_chol_upper_f64(tMatrix* const pSrc);
-mtxResultInfo mtx_chol_lower_f64(tMatrix* const pSrc);
-mtxResultInfo mtx_inv_f64(tMatrix* const pSrc, tMatrix* const pDst);
-mtxResultInfo mtx_add_f64(tMatrix* const pDst, tMatrix const* const pSrc);
-mtxResultInfo mtx_sub_f64(tMatrix* const pDst, tMatrix const* const pSrc);
-mtxResultInfo mtx_mul_scalar_f64(tMatrix* const pSrc, const float64 scalar);
-mtxResultInfo mtx_add_scalar_f64(tMatrix* const pSrc, const float64 scalar);
-mtxResultInfo mtx_sub_scalar_f64(tMatrix* const pSrc, const float64 scalar);
-mtxResultInfo mtx_cpy_f64(tMatrix* const pDst, tMatrix const* const pSrc);
-mtxResultInfo mtx_identity_f64(tMatrix* const pSrc);
-mtxResultInfo mtx_zeros_f64(tMatrix* const pSrc);
-mtxResultInfo mtx_mul_src2tr_f64(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
-mtxResultInfo mtx_print_f64(tMatrix const *A);
+mtxResultInfo mtx_init_bool(tMatrixBool* const pSrc, uint8_t* const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem);
+mtxResultInfo mtx_init(tMatrix* const pSrc, float* const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem);
+mtxResultInfo mtx_mul(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
+mtxResultInfo mtx_transp_square(tMatrix* const pSrc);
+mtxResultInfo mtx_transp_dest(tMatrix const* const pSrc, tMatrix* const pDst);
+mtxResultInfo mtx_diagsum(tMatrix* pSrc, float* diagsum);
+mtxResultInfo mtx_chol_upper(tMatrix* const pSrc);
+mtxResultInfo mtx_chol_lower(tMatrix* const pSrc);
+mtxResultInfo mtx_inv(tMatrix* const pSrc, tMatrix* const pDst);
+mtxResultInfo mtx_add(tMatrix* const pDst, tMatrix const* const pSrc);
+mtxResultInfo mtx_sub(tMatrix* const pDst, tMatrix const* const pSrc);
+mtxResultInfo mtx_mul_scalar(tMatrix* const pSrc, const float scalar);
+mtxResultInfo mtx_add_scalar(tMatrix* const pSrc, const float scalar);
+mtxResultInfo mtx_sub_scalar(tMatrix* const pSrc, const float scalar);
+mtxResultInfo mtx_cpy(tMatrix* const pDst, tMatrix const* const pSrc);
+mtxResultInfo mtx_identity(tMatrix* const pSrc);
+mtxResultInfo mtx_zeros(tMatrix* const pSrc);
+mtxResultInfo mtx_mul_src2tr(tMatrix const* const pSrc1, tMatrix const* const pSrc2, tMatrix* const pDst);
+mtxResultInfo mtx_print(tMatrix const *A);
 
 #endif

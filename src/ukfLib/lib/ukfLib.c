@@ -28,18 +28,19 @@
 \******************************************************************************************************************************************************************************************************/
 
 #include "ukfLib.h"
+#include <stdint.h>
 
-static boolean ukf_dimension_check(tUKF *const pUkf);
+static uint8_t ukf_dimension_check(tUKF *const pUkf);
 static void ukf_meas_update(tUKF *const pUkf);
 static void ukf_sigmapoint(tUKF *const pUkf);
 static void ukf_mean_pred_state(tUKF *const pUkf);
 static void ukf_mean_pred_output(tUKF *const pUkf);
 static void ukf_calc_covariances(tUKF *const pUkf);
-static float64 ukf_state_limiter(const float64 state, const float64 min, const float64 max, const boolean enbl);
+static float ukf_state_limiter(const float state, const float min, const float max, const uint8_t enbl);
 
 /******************************************************************************************************************************************************************************************************\
  ***  FUNCTION:
- ***      float64 ukf_state_limiter(const float64 State,const float64 minLimit,const float64 maxLimit,const boolean enbl)
+ ***      float ukf_state_limiter(const float State,const float minLimit,const float maxLimit,const uint8_t enbl)
  *** 
  ***  DESCRIPTION:
  ***      Clamp system states in permitted range     
@@ -47,17 +48,17 @@ static float64 ukf_state_limiter(const float64 state, const float64 min, const f
  ***  PARAMETERS:
  ***      Type               Name              Range              Description
  ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      const float64      state                                state value which should be clamped
- ***      const float64      min                                  lower state range
- ***      const float64      max                                  higher state range 
- ***      const boolean      enbl                                 limiter enable flag
+ ***      const float      state                                state value which should be clamped
+ ***      const float      min                                  lower state range
+ ***      const float      max                                  higher state range 
+ ***      const uint8_t      enbl                                 limiter enable flag
  ***  RETURNS:
- ***      float64            clamp
+ ***      float            clamp
  ***  SETTINGS:
  ***
 \******************************************************************************************************************************************************************************************************/
-static float64 ukf_state_limiter(const float64 state, const float64 min, const float64 max, const boolean enbl) {
-    float64 clamp = state;
+static float ukf_state_limiter(const float state, const float min, const float max, const uint8_t enbl) {
+    float clamp = state;
 
     if (0 != enbl) {
         if (min > state) {
@@ -73,7 +74,7 @@ static float64 ukf_state_limiter(const float64 state, const float64 min, const f
 }
 /******************************************************************************************************************************************************************************************************\
  ***  FUNCTION:
- ***      boolean ukf_dimension_check(tUKF * const pUkf)
+ ***      uint8_t ukf_dimension_check(tUKF * const pUkf)
  *** 
  ***  DESCRIPTION:
  ***      Check if working matrix size defined in ukfCfg.c match to defined system expectation(verification of all matrix is vs number of states xLen and number of measurements yLen)     
@@ -83,17 +84,17 @@ static float64 ukf_state_limiter(const float64 state, const float64 min, const f
  ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ***      tUKF * const       pUkf                                 UKF - Working structure with reference to all in,out,states,par
  ***  RETURNS:
- ***      boolean
+ ***      uint8_t
  ***      0 - OK , 
  ***      1 - NOK
  ***  SETTINGS:
  ***
 \******************************************************************************************************************************************************************************************************/
-static boolean ukf_dimension_check(tUKF *const pUkf) {
-    const uint8 stateLen = pUkf->par.xLen;
-    //const uint8  measLen = pUkf->par.yLen;
-    const uint8 sigmaLen = pUkf->par.sLen;
-    boolean Result = 0;
+static uint8_t ukf_dimension_check(tUKF *const pUkf) {
+    const uint8_t stateLen = pUkf->par.xLen;
+    //const uint8_t  measLen = pUkf->par.yLen;
+    const uint8_t sigmaLen = pUkf->par.sLen;
+    uint8_t Result = 0;
 
     //check system input vector size if exist: (xLen x 1)
     if (NULL != pUkf->input.u.val && NULL != pUkf->prev.u_p.val) {
@@ -228,21 +229,21 @@ static boolean ukf_dimension_check(tUKF *const pUkf) {
  ***      Type               Name                     Lim       Description
  ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ***      tUKF * const       pUkf                               UKF - Working structure with all in,out,par
- ***      uint8              xLen                     1-127     UKF - State vector length
- ***      uint8              yLen                               UKF - Measurements vector length
+ ***      uint8_t              xLen                     1-127     UKF - State vector length
+ ***      uint8_t              yLen                               UKF - Measurements vector length
  ***      tUkfMatrix *       pUkfMatrix                         UKF - Structure with all filter matrix
  ***  RETURNS:
- ***      boolean
+ ***      uint8_t
  ***
  ***  SETTINGS:
  ***
 \******************************************************************************************************************************************************************************************************/
-boolean ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
-    uint8 xIdx;
+uint8_t ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
+    uint8_t xIdx;
     tUKFpar *const pPar = (tUKFpar *)&pUkf->par;
     tUKFprev *const pPrev = (tUKFprev *)&pUkf->prev;
-    const uint8 WmLen = pUkfMatrix->Wm_weight_vector.ncol;
-    const uint8 WcLen = pUkfMatrix->Wc_weight_vector.ncol;
+    const uint8_t WmLen = pUkfMatrix->Wm_weight_vector.ncol;
+    const uint8_t WcLen = pUkfMatrix->Wc_weight_vector.ncol;
 
     pPar->xLim = pUkfMatrix->x_system_states_limits;
     pPar->xLimEnbl = pUkfMatrix->x_system_states_limits_enable;
@@ -262,9 +263,9 @@ boolean ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
 
     if (NULL != pUkf->par.xLimEnbl.val && NULL != pUkf->par.xLim.val) {
         for (xIdx = 0; xIdx < pPar->xLim.nrow; xIdx++) {
-            const float64 xMin = pPar->xLim.val[pPar->xLim.ncol * xIdx + xMinIdx];
-            const float64 xMax = pPar->xLim.val[pPar->xLim.ncol * xIdx + xMaxIdx];
-            const float64 xEps = pPar->xLim.val[pPar->xLim.ncol * xIdx + xEpsIdx];
+            const float xMin = pPar->xLim.val[pPar->xLim.ncol * xIdx + xMinIdx];
+            const float xMax = pPar->xLim.val[pPar->xLim.ncol * xIdx + xMaxIdx];
+            const float xEps = pPar->xLim.val[pPar->xLim.ncol * xIdx + xEpsIdx];
 
             if (0 != pPar->xLimEnbl.val[xIdx] && ((xMin + xEps) > xMax)) {
                 //limiter range too low -> disable limiter for this state
@@ -277,14 +278,14 @@ boolean ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
 
     //#1.3'(begin) Calculate scaling parameter
     pPar->lambda = pPar->alpha * pPar->alpha;
-    pPar->lambda *= (float64)(pPar->xLen + pPar->kappa);
-    pPar->lambda -= (float64)pPar->xLen;
+    pPar->lambda *= (float)(pPar->xLen + pPar->kappa);
+    pPar->lambda -= (float)pPar->xLen;
     //#1.3'(end) Calculate scaling parameter
 
     //#1.2'(begin) Calculate weight vectors
     if (WmLen == pPar->sLen && WcLen == WmLen) {
-        uint8 col;
-        const float64 Wm0 = pPar->lambda / (pPar->xLen + pPar->lambda);
+        uint8_t col;
+        const float Wm0 = pPar->lambda / (pPar->xLen + pPar->lambda);
 
         pPar->Wm.val[0] = Wm0;
         pPar->Wc.val[0] = Wm0 + (1 - pPar->alpha * pPar->alpha + pPar->betha);
@@ -324,22 +325,22 @@ boolean ukf_init(tUKF *const pUkf, tUkfMatrix *pUkfMatrix) {
     pUkf->update.x_corr = pUkfMatrix->x_system_states_correction;
     pUkf->update.Pxx_corr = pUkfMatrix->Pxx_covariance_correction;
 
-    mtx_cpy_f64(&pUkf->prev.Pxx_p, &pPar->Pxx0);  //init also P_m, Pxx
-    mtx_cpy_f64(&pUkf->prev.x_p, &pPar->x0);
-    /*mtx_cpy_f64(&pUkf->update.Pyy, &pPar->Ryy0);
-    mtx_zeros_f64(&pUkf->prev.X_p);//inti also X_m
-    mtx_zeros_f64(&pUkf->prev.u_p); 
-    mtx_zeros_f64(&pUkf->predict.y_m);
-    mtx_zeros_f64(&pUkf->predict.Y_m);
-    mtx_zeros_f64(&pUkf->update.Iyy);
-    mtx_zeros_f64(&pUkf->update.K);
-    mtx_zeros_f64(&pUkf->update.Kt);
-    mtx_zeros_f64(&pUkf->update.Pxy);  
-    mtx_zeros_f64(&pUkf->update.Pyy_cpy);
-    mtx_zeros_f64(&pUkf->update.x_corr);
-    mtx_zeros_f64(&pUkf->update.Pxx_corr);     
-    mtx_zeros_f64(&pUkf->input.u);
-    mtx_zeros_f64(&pUkf->input.y);*/
+    mtx_cpy(&pUkf->prev.Pxx_p, &pPar->Pxx0);  //init also P_m, Pxx
+    mtx_cpy(&pUkf->prev.x_p, &pPar->x0);
+    /*mtx_cpy(&pUkf->update.Pyy, &pPar->Ryy0);
+    mtx_zeros(&pUkf->prev.X_p);//inti also X_m
+    mtx_zeros(&pUkf->prev.u_p); 
+    mtx_zeros(&pUkf->predict.y_m);
+    mtx_zeros(&pUkf->predict.Y_m);
+    mtx_zeros(&pUkf->update.Iyy);
+    mtx_zeros(&pUkf->update.K);
+    mtx_zeros(&pUkf->update.Kt);
+    mtx_zeros(&pUkf->update.Pxy);  
+    mtx_zeros(&pUkf->update.Pyy_cpy);
+    mtx_zeros(&pUkf->update.x_corr);
+    mtx_zeros(&pUkf->update.Pxx_corr);     
+    mtx_zeros(&pUkf->input.u);
+    mtx_zeros(&pUkf->input.y);*/
 
     return ukf_dimension_check(pUkf);
 }
@@ -370,10 +371,10 @@ void ukf_step(tUKF *const pUkf) {
     ukf_meas_update(pUkf);
 
     if (NULL != pUkf->input.u.val && NULL != pUkf->prev.u_p.val) {
-        float64 *const pu_p = pUkf->prev.u_p.val;
-        const float64 *const pu = pUkf->input.u.val;
-        const uint8 uLen = pUkf->prev.u_p.nrow;
-        uint8 u8Idx;
+        float *const pu_p = pUkf->prev.u_p.val;
+        const float *const pu = pUkf->input.u.val;
+        const uint8_t uLen = pUkf->prev.u_p.nrow;
+        uint8_t u8Idx;
 
         for (u8Idx = 0; u8Idx < uLen; u8Idx++) {
             //store prev inputs required for next step calculation
@@ -402,25 +403,25 @@ void ukf_step(tUKF *const pUkf) {
  ***
 \******************************************************************************************************************************************************************************************************/
 static void ukf_sigmapoint(tUKF *const pUkf) {
-    float64 *const pPxx_p = pUkf->prev.Pxx_p.val;
-    float64 *const pX_p = pUkf->prev.X_p.val;
-    float64 *const px_p = pUkf->prev.x_p.val;
-    const float64 lambda = pUkf->par.lambda;
-    const uint8 sLen = pUkf->par.sLen;
-    const uint8 xLen = pUkf->par.xLen;
-    uint8 xIdx;
-    uint8 sigmaIdx = 0;
+    float *const pPxx_p = pUkf->prev.Pxx_p.val;
+    float *const pX_p = pUkf->prev.X_p.val;
+    float *const px_p = pUkf->prev.x_p.val;
+    const float lambda = pUkf->par.lambda;
+    const uint8_t sLen = pUkf->par.sLen;
+    const uint8_t xLen = pUkf->par.xLen;
+    uint8_t xIdx;
+    uint8_t sigmaIdx = 0;
     mtxResultInfo mtxResult;
 
     //#1.1(begin/end) Calculate error covariance matrix square root
-    mtxResult = mtx_chol_lower_f64(&pUkf->prev.Pxx_p);
+    mtxResult = mtx_chol_lower(&pUkf->prev.Pxx_p);
 
     if (MTX_OPERATION_OK == mtxResult) {
         //#1.2(begin) Calculate the sigma-points
         for (xIdx = 0; xIdx < xLen; xIdx++) {
-            float64 xMin = 0;
-            float64 xMax = 0;
-            boolean xLimEnbl = 0;
+            float xMin = 0;
+            float xMax = 0;
+            uint8_t xLimEnbl = 0;
 
             if (NULL != pUkf->par.xLimEnbl.val && NULL != pUkf->par.xLim.val) {
                 xMin = pUkf->par.xLim.val[pUkf->par.xLim.ncol * xIdx + xMinIdx];
@@ -432,13 +433,13 @@ static void ukf_sigmapoint(tUKF *const pUkf) {
             pX_p[sLen * xIdx + sigmaIdx] = ukf_state_limiter(px_p[xIdx], xMin, xMax, xLimEnbl);
         }
 
-        (void)mtx_mul_scalar_f64(&pUkf->prev.Pxx_p, sqrt(xLen + lambda));
+        (void)mtx_mul_scalar(&pUkf->prev.Pxx_p, sqrt(xLen + lambda));
 
         for (sigmaIdx = 1; sigmaIdx < sLen; sigmaIdx++) {
             for (xIdx = 0; xIdx < xLen; xIdx++) {
-                float64 xMin = 0;
-                float64 xMax = 0;
-                boolean xLimEnbl = 0;
+                float xMin = 0;
+                float xMax = 0;
+                uint8_t xLimEnbl = 0;
 
                 if (NULL != pUkf->par.xLimEnbl.val && NULL != pUkf->par.xLim.val) {
                     xMin = pUkf->par.xLim.val[pUkf->par.xLim.ncol * xIdx + xMinIdx];
@@ -477,12 +478,12 @@ static void ukf_sigmapoint(tUKF *const pUkf) {
 \******************************************************************************************************************************************************************************************************/
 static void ukf_mean_pred_state(tUKF *const pUkf) {
     tUKFpar const *const pPar = (tUKFpar *)&pUkf->par;
-    const uint8 xLen = pPar->xLen;
-    const uint8 sigmaLen = pPar->sLen;
-    float64 *const px_m = pUkf->predict.x_m.val;
-    float64 const *const pX_m = pUkf->predict.X_m.val;
-    float64 const *const pWm = pPar->Wm.val;
-    uint8 sigmaIdx, xIdx;
+    const uint8_t xLen = pPar->xLen;
+    const uint8_t sigmaLen = pPar->sLen;
+    float *const px_m = pUkf->predict.x_m.val;
+    float const *const pX_m = pUkf->predict.X_m.val;
+    float const *const pWm = pPar->Wm.val;
+    uint8_t sigmaIdx, xIdx;
 
     for (xIdx = 0; xIdx < xLen; xIdx++) {
         px_m[xIdx] = 0;
@@ -518,28 +519,28 @@ static void ukf_mean_pred_state(tUKF *const pUkf) {
 \******************************************************************************************************************************************************************************************************/
 static void ukf_mean_pred_output(tUKF *const pUkf) {
     tUKFpar const *const pPar = (tUKFpar *)&pUkf->par;
-    float64 const *const pWm = pPar->Wm.val;
-    float64 const *const pWc = pPar->Wc.val;
-    float64 const *const pX_m = pUkf->predict.X_m.val;
-    float64 *const pY_m = pUkf->predict.Y_m.val;
-    float64 *const pP_m = pUkf->predict.P_m.val;
-    float64 *const px_m = pUkf->predict.x_m.val;
-    float64 *py_m = pUkf->predict.y_m.val;
-    const uint8 sigmaLen = pPar->sLen;
-    const uint8 xLen = pPar->xLen;
-    const uint8 yLen = pPar->yLen;
-    uint8 sigmaIdx, xIdx, xTrIdx, yIdx;
+    float const *const pWm = pPar->Wm.val;
+    float const *const pWc = pPar->Wc.val;
+    float const *const pX_m = pUkf->predict.X_m.val;
+    float *const pY_m = pUkf->predict.Y_m.val;
+    float *const pP_m = pUkf->predict.P_m.val;
+    float *const px_m = pUkf->predict.x_m.val;
+    float *py_m = pUkf->predict.y_m.val;
+    const uint8_t sigmaLen = pPar->sLen;
+    const uint8_t xLen = pPar->xLen;
+    const uint8_t yLen = pPar->yLen;
+    uint8_t sigmaIdx, xIdx, xTrIdx, yIdx;
 
-    mtx_zeros_f64(&pUkf->predict.y_m);
+    mtx_zeros(&pUkf->predict.y_m);
 
     //P(k|k-1) = Q(k-1)
-    mtx_cpy_f64(&pUkf->predict.P_m, &pUkf->par.Qxx);
+    mtx_cpy(&pUkf->predict.P_m, &pUkf->par.Qxx);
 
     for (sigmaIdx = 0; sigmaIdx < sigmaLen; sigmaIdx++) {
         for (xIdx = 0; xIdx < xLen; xIdx++) {
             for (xTrIdx = 0; xTrIdx < xLen; xTrIdx++) {
-                float64 term1 = (pX_m[sigmaLen * xIdx + sigmaIdx] - px_m[xIdx]);
-                float64 term2 = (pX_m[sigmaLen * xTrIdx + sigmaIdx] - px_m[xTrIdx]);
+                float term1 = (pX_m[sigmaLen * xIdx + sigmaIdx] - px_m[xIdx]);
+                float term2 = (pX_m[sigmaLen * xTrIdx + sigmaIdx] - px_m[xTrIdx]);
 
                 //#2.3 Calculate covariance of predicted state
                 //Perform multiplication with accumulation for each covariance matrix index
@@ -579,28 +580,28 @@ static void ukf_mean_pred_output(tUKF *const pUkf) {
 \******************************************************************************************************************************************************************************************************/
 static void ukf_calc_covariances(tUKF *const pUkf) {
     tUKFpar const *const pPar = (tUKFpar *)&pUkf->par;
-    float64 const *const pWc = pPar->Wc.val;
-    float64 const *const pX_m = pUkf->predict.X_m.val;
-    float64 *const pY_m = pUkf->predict.Y_m.val;
-    float64 *const pPyy = pUkf->update.Pyy.val;
-    float64 *const pPxy = pUkf->update.Pxy.val;
-    float64 *const px_m = pUkf->predict.x_m.val;
-    float64 *py_m = pUkf->predict.y_m.val;
-    const uint8 sigmaLen = pPar->sLen;
-    const uint8 xLen = pPar->xLen;
-    const uint8 yLen = pPar->yLen;
-    uint8 sigmaIdx, xIdx, yIdx, yTrIdx;
+    float const *const pWc = pPar->Wc.val;
+    float const *const pX_m = pUkf->predict.X_m.val;
+    float *const pY_m = pUkf->predict.Y_m.val;
+    float *const pPyy = pUkf->update.Pyy.val;
+    float *const pPxy = pUkf->update.Pxy.val;
+    float *const px_m = pUkf->predict.x_m.val;
+    float *py_m = pUkf->predict.y_m.val;
+    const uint8_t sigmaLen = pPar->sLen;
+    const uint8_t xLen = pPar->xLen;
+    const uint8_t yLen = pPar->yLen;
+    uint8_t sigmaIdx, xIdx, yIdx, yTrIdx;
 
-    mtx_cpy_f64(&pUkf->update.Pyy, &pPar->Ryy0);  //Pyy(k|k-1) = R(k)
+    mtx_cpy(&pUkf->update.Pyy, &pPar->Ryy0);  //Pyy(k|k-1) = R(k)
 
-    mtx_zeros_f64(&pUkf->update.Pxy);
+    mtx_zeros(&pUkf->update.Pxy);
 
     for (sigmaIdx = 0; sigmaIdx < sigmaLen; sigmaIdx++) {
         for (yIdx = 0; yIdx < yLen; yIdx++) {
             for (yTrIdx = 0; yTrIdx < yLen; yTrIdx++) {
                 //loop col of COV[L][:]
-                float64 term1 = (pY_m[sigmaLen * yIdx + sigmaIdx] - py_m[yIdx]);
-                float64 term2 = (pY_m[sigmaLen * yTrIdx + sigmaIdx] - py_m[yTrIdx]);
+                float term1 = (pY_m[sigmaLen * yIdx + sigmaIdx] - py_m[yIdx]);
+                float term2 = (pY_m[sigmaLen * yTrIdx + sigmaIdx] - py_m[yTrIdx]);
 
                 //#3.3 Calculate covariance of predicted output
                 //Perform multiplication with accumulation for each covariance matrix index
@@ -610,8 +611,8 @@ static void ukf_calc_covariances(tUKF *const pUkf) {
 
         for (xIdx = 0; xIdx < xLen; xIdx++) {
             for (yTrIdx = 0; yTrIdx < yLen; yTrIdx++) {
-                float64 term1 = (pX_m[sigmaLen * xIdx + sigmaIdx] - px_m[xIdx]);
-                float64 term2 = (pY_m[sigmaLen * yTrIdx + sigmaIdx] - py_m[yTrIdx]);
+                float term1 = (pX_m[sigmaLen * xIdx + sigmaIdx] - px_m[xIdx]);
+                float term2 = (pY_m[sigmaLen * yTrIdx + sigmaIdx] - py_m[yTrIdx]);
 
                 //#3.4 Calculate cross-covariance of state and output
                 pPxy[yLen * xIdx + yTrIdx] += pWc[sigmaIdx] * term1 * term2;
@@ -642,36 +643,36 @@ static void ukf_meas_update(tUKF *const pUkf) {
     tUKFupdate *const pUpdate = (tUKFupdate *)&pUkf->update;
 
     //#4.1(begin) Calculate Kalman gain:
-    (void)mtx_identity_f64(&pUpdate->Iyy);
+    (void)mtx_identity(&pUpdate->Iyy);
 
-    (void)mtx_cpy_f64(&pUpdate->Pyy_cpy, &pUpdate->Pyy);
+    (void)mtx_cpy(&pUpdate->Pyy_cpy, &pUpdate->Pyy);
 
     //inv(Pyy_cpy)
-    (void)mtx_inv_f64(&pUpdate->Pyy_cpy, &pUpdate->Iyy);
+    (void)mtx_inv(&pUpdate->Pyy_cpy, &pUpdate->Iyy);
 
     //Kgain = Pxy * inv(Pyy)
-    (void)mtx_mul_f64(&pUpdate->Pxy, &pUpdate->Iyy, &pUpdate->K);
+    (void)mtx_mul(&pUpdate->Pxy, &pUpdate->Iyy, &pUpdate->K);
     //#4.1(end) Calculate Kalman gain:
 
     //#4.2(begin) Update state estimate
     // y = y - y_m
-    (void)mtx_sub_f64(&pUkf->input.y, &pUkf->predict.y_m);
+    (void)mtx_sub(&pUkf->input.y, &pUkf->predict.y_m);
 
     // K*(y - y_m) states correction
-    (void)mtx_mul_f64(&pUpdate->K, &pUkf->input.y, &pUkf->update.x_corr);
+    (void)mtx_mul(&pUpdate->K, &pUkf->input.y, &pUkf->update.x_corr);
 
     // x = x_m + K*(y - y_m)
-    (void)mtx_add_f64(&pUkf->predict.x_m, &pUkf->update.x_corr);
+    (void)mtx_add(&pUkf->predict.x_m, &pUkf->update.x_corr);
     //#4.2(end) Update state estimate
 
     //#4.3(begin).Update error covariance
     //use Pxy for temporal result from multiplication
     //Pxy = K*Pyy
-    (void)mtx_mul_f64(&pUpdate->K, &pUpdate->Pyy, &pUpdate->Pxy);
+    (void)mtx_mul(&pUpdate->K, &pUpdate->Pyy, &pUpdate->Pxy);
 
     //Pxx_corr = K*Pyy*K'
-    (void)mtx_mul_src2tr_f64(&pUpdate->Pxy, &pUpdate->K, &pUpdate->Pxx_corr);
+    (void)mtx_mul_src2tr(&pUpdate->Pxy, &pUpdate->K, &pUpdate->Pxx_corr);
 
-    (void)mtx_sub_f64(&pUkf->predict.P_m, &pUpdate->Pxx_corr);
+    (void)mtx_sub(&pUkf->predict.P_m, &pUpdate->Pxx_corr);
     //#4.3(end).Update error covariance
 }
