@@ -1,29 +1,24 @@
-/******************************************************************************************************************************************************************************************************\
- *** 
- *** Description       : IMPLEMENTATION OF BASIC MATRIX OPERATION
- *** Codefile          : mtxLib.c
-\******************************************************************************************************************************************************************************************************/
+/**
+ * @file mtxLib.c
+ * @brief Matrix operations
+ * @version 0.1
+ * @date 2021-02-20
+ */
 
 #include <stdio.h>
 #include <stdint.h>
 #include "mtxLib.h"
 
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param pValue 
+ * @param nrow 
+ * @param ncol 
+ * @param nelem 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_init_bool(tMatrixBool *const pSrc, uint8_t *const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem) {
     pSrc->val = pValue;
     pSrc->ncol = ncol;
@@ -31,22 +26,17 @@ mtxResultInfo mtx_init_bool(tMatrixBool *const pSrc, uint8_t *const pValue, cons
     pSrc->nelem = nelem;
     return MTX_OPERATION_OK;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param pValue 
+ * @param nrow 
+ * @param ncol 
+ * @param nelem 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_init(tMatrix *const pSrc, float *const pValue, const uint8_t nrow, const uint8_t ncol, const uint16_t nelem) {
     pSrc->val = pValue;
     pSrc->ncol = ncol;
@@ -54,22 +44,14 @@ mtxResultInfo mtx_init(tMatrix *const pSrc, float *const pValue, const uint8_t n
     pSrc->nelem = nelem;
     return MTX_OPERATION_OK;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION: For square matrix only
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param diagsum 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_diagsum(tMatrix *pSrc, float *diagsum) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float const *const pSrcL = (float *)pSrc->val;
@@ -92,22 +74,13 @@ mtxResultInfo mtx_diagsum(tMatrix *pSrc, float *diagsum) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION: A=A'
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_transp_square(tMatrix *const pSrc) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     const uint8_t nrow = pSrc->nrow;
@@ -132,22 +105,14 @@ mtxResultInfo mtx_transp_square(tMatrix *const pSrc) {
 
     return ResultL;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param pDst 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_transp_dest(tMatrix const *const pSrc, tMatrix *const pDst) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float const *const pSrcL = (float *)pSrc->val;
@@ -170,22 +135,15 @@ mtxResultInfo mtx_transp_dest(tMatrix const *const pSrc, tMatrix *const pDst) {
 
     return ResultL;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION: C=A*B
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc1 
+ * @param pSrc2 
+ * @param pDst 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_mul(tMatrix const *const pSrc1, tMatrix const *const pSrc2, tMatrix *const pDst) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float const *const pSrc1L = (float *)pSrc1->val;
@@ -210,22 +168,18 @@ mtxResultInfo mtx_mul(tMatrix const *const pSrc1, tMatrix const *const pSrc2, tM
 
     return ResultL;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION: 
- ***     
- *** 
- ***  DESCRIPTION: Special multiplication Dst=Src1*Src2'
- ***  Special function for multiplication of Src1 matrix with transpose image of Src2 matrix. Be sure that array size are suitable for multiplication after Src2 transpose  
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief Special multiplication Dst=Src1*Src2'
+ * Special function for multiplication of Src1 matrix with 
+ * transpose image of Src2 matrix. Be sure that array size are
+ * suitable for multiplication after Src2 transpose  
+ * 
+ * @param pSrc1 
+ * @param pSrc2 
+ * @param pDst 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_mul_src2tr(tMatrix const *const pSrc1, tMatrix const *const pSrc2, tMatrix *const pDst) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float const *const pSrc1L = (float *)pSrc1->val;
@@ -250,22 +204,13 @@ mtxResultInfo mtx_mul_src2tr(tMatrix const *const pSrc1, tMatrix const *const pS
 
     return ResultL;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_chol_lower(tMatrix *const pSrc) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float *const pSrcL = pSrc->val;
@@ -300,22 +245,13 @@ mtxResultInfo mtx_chol_lower(tMatrix *const pSrc) {
 
     return ResultL;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_chol_upper(tMatrix *const pSrc) {
     mtxResultInfo ResultL = MTX_OPERATION_OK;
     float *const pSrcL = pSrc->val;
@@ -349,24 +285,15 @@ mtxResultInfo mtx_chol_upper(tMatrix *const pSrc) {
 
     return ResultL;
 }
-/******************************************************************************************************************************************************************************************************\
-***  FUNCTION:
-***     
- *** 
- ***  DESCRIPTION:
- ***  
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      tMatrix * const    pDst                                - At the begining should point to identity matrix!!
- ***      tMatrix * const    pSrc                                - Square matrix
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
-/* TODO: implement pDst so it doesnt need to be initialized to an identity matrix beforehand, rather in this function IvanVnucec */
+
+/**
+ * @brief Matrix inverse.
+ * 
+ * @param pSrc Square matrix
+ * @param pDst At the begining should point to identity matrix!!
+ * @note  
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_inv(tMatrix *const pSrc, tMatrix *const pDst) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     const uint8_t nrow = pSrc->nrow;
@@ -376,6 +303,10 @@ mtxResultInfo mtx_inv(tMatrix *const pSrc, tMatrix *const pDst) {
     uint8_t l = 0;
     float s = 0;
     float t = 0;
+
+    /* TODO: implement pDst so it doesnt need to be initialized to an identity 
+    matrix beforehand, rather in this function IvanVnucec 
+    */
 
     if (nrow == ncol) {
         for (j = 0; j < nrow; j++) {
@@ -420,22 +351,14 @@ mtxResultInfo mtx_inv(tMatrix *const pSrc, tMatrix *const pDst) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pDst 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_add(tMatrix *const pDst, tMatrix const *const pSrc) {
     uint8_t Result = MTX_OPERATION_OK;
     float *const pDstL = (float *)pDst->val;
@@ -452,22 +375,14 @@ mtxResultInfo mtx_add(tMatrix *const pDst, tMatrix const *const pSrc) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pDst 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_sub(tMatrix *const pDst, tMatrix const *const pSrc) {
     uint8_t Result = MTX_OPERATION_OK;
     float *const pDstL = (float *)pDst->val;
@@ -484,22 +399,14 @@ mtxResultInfo mtx_sub(tMatrix *const pDst, tMatrix const *const pSrc) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param scalar 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_mul_scalar(tMatrix *const pSrc, const float scalar) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = pSrc->val;
@@ -511,22 +418,14 @@ mtxResultInfo mtx_mul_scalar(tMatrix *const pSrc, const float scalar) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param scalar 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_sub_scalar(tMatrix *const pSrc, const float scalar) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = pSrc->val;
@@ -538,22 +437,14 @@ mtxResultInfo mtx_sub_scalar(tMatrix *const pSrc, const float scalar) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @param scalar 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_add_scalar(tMatrix *const pSrc, const float scalar) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = pSrc->val;
@@ -565,22 +456,14 @@ mtxResultInfo mtx_add_scalar(tMatrix *const pSrc, const float scalar) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pDst 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_cpy(tMatrix *const pDst, tMatrix const *const pSrc) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDstL = pDst->val;
@@ -597,22 +480,13 @@ mtxResultInfo mtx_cpy(tMatrix *const pDst, tMatrix const *const pSrc) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_identity(tMatrix *const pSrc) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = (float *)pSrc->val;
@@ -636,22 +510,13 @@ mtxResultInfo mtx_identity(tMatrix *const pSrc) {
 
     return Result;
 }
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***     
- *** 
- ***  DESCRIPTION:
- ***
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      
- ***  RETURNS:
- ***      
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
+
+/**
+ * @brief 
+ * 
+ * @param pSrc 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_zeros(tMatrix *const pSrc) {
     mtxResultInfo Result = MTX_OPERATION_OK;
     float *const pDst = (float *)pSrc->val;
@@ -664,6 +529,12 @@ mtxResultInfo mtx_zeros(tMatrix *const pSrc) {
     return Result;
 }
 
+/**
+ * @brief 
+ * 
+ * @param A 
+ * @return mtxResultInfo 
+ */
 mtxResultInfo mtx_print(tMatrix const *A) {
     int i, j;
     mtxResultInfo Result = MTX_OPERATION_OK;

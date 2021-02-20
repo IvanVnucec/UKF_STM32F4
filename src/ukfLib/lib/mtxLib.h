@@ -1,17 +1,17 @@
-/******************************************************************************************************************************************************************************************************\
- *** 
- *** Description       : IMPLEMENTATION OF BASIC MATRIX OPERATION
- *** Codefile          : mtxLib.h
-\******************************************************************************************************************************************************************************************************/
+/**
+ * @file mtxLib.h
+ * @brief Basic matrix operations header.
+ * @version 0.1
+ * @date 2021-02-20
+ */
+
 #ifndef MTXLIB_FILE
 #define MTXLIB_FILE
 
 #include <math.h>
 #include <stdint.h>
 
-/*---------------------------------------------*/
-/*         Macros definiton                    */
-/*---------------------------------------------*/
+//! Macros definiton
 #define NCOL(arr) (sizeof(arr[0]) / sizeof(arr[0][0]))
 #define NROWS(arr) (sizeof(arr) / sizeof(arr[0]))
 #define COLXROW(arr) (sizeof(arr) / sizeof(arr[0][0]))
