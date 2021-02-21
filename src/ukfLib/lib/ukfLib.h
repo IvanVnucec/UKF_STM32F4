@@ -18,7 +18,7 @@ typedef void (*tPredictFcn)(tMatrix* pu_p, tMatrix* px_p, tMatrix* pX_m, uint8_t
 typedef void (*tObservFcn)(tMatrix* pu, tMatrix* pX_m, tMatrix* pY_m, uint8_t sigmaIdx);
 
 typedef struct ukfMatrix {
-    tMatrix Sc_vector;
+    tMatrix Sc_vector;          //! Holds alpha, beta and kappa parameters for 
     tMatrix Wm_weight_vector;
     tMatrix Wc_weight_vector;
     tMatrix x_system_states;
