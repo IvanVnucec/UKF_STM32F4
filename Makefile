@@ -18,7 +18,7 @@ GIT_SHA := \"$(shell $(GIT) rev-parse --short HEAD)\"
 
 
 SRCS_APP = \
-  src/app.c \
+  src/main.c \
   src/clock.c \
   src/gpio.c \
   src/usart.c \
@@ -26,7 +26,8 @@ SRCS_APP = \
   src/ukfLib/lib/mtxLib.c \
   src/ukfLib/lib/ukfLib.c \
   src/ukfLib/cfg/ukfCfg.c \
-  src/ukfLib/cfg/ukfCfg2.c
+  src/ukfLib/cfg/ukfCfg2.c \
+  src/IMUdata.c
 
 
 INCLUDES = \

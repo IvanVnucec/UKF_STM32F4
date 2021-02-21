@@ -11,7 +11,7 @@
 #include "../lib/ukfLib.h"
 
 #define Lx (7u)
-#define Ly (2u)
+#define Ly (6u)
 
 #endif /* UKFCFG2_H */
 

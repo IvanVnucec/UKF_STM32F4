@@ -1,21 +1,28 @@
-#include <errno.h>
 #include <libopencm3/cm3/vector.h>
 #include <libopencm3/stm32/usart.h>
 #include <math.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdint.h>
 
 #include "clock.h"
 #include "gpio.h"
-#include "ukfLib/cfg/ukfCfg.h"
 #include "usart.h"
+
+#include "ukfLib/cfg/ukfCfg.h"
 
 #define UKF_TEST_EPS (1e-3)
 
 extern tUkfMatrix UkfMatrixCfg;
+extern tUkfMatrix UkfMatrixCfg2;
+
+//! IMU data
+extern float accData[][3];
+extern float gyroData[][3];
+extern float magData[][3];
 
 void ukf_test(void);
+void ukf_test2(void);
+
 
 int main(void) {
     clock_setup();
@@ -26,6 +33,7 @@ int main(void) {
 
     //UKF test start here
     ukf_test();
+    ukf_test2();
 
     printf("\nApp DONE\n");
 
@@ -34,24 +42,6 @@ int main(void) {
     return 0;
 }
 
-/******************************************************************************************************************************************************************************************************\
- ***  FUNCTION:
- ***      void ukf_test(void)
- *** 
- ***  DESCRIPTION:
- ***      Initialize and test UKF C implementation against expected result. Filter is tested in the loop from 15 steps. 
- ***      Total root square error is accumulated in the same loop for each state in order to show deviation from reference matlab solution.      
- ***            
- ***  PARAMETERS:
- ***      Type               Name              Range              Description
- ***      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- ***      void
- ***  RETURNS:
- ***      void
- ***
- ***  SETTINGS:
- ***
-\******************************************************************************************************************************************************************************************************/
 void ukf_test(void) {
     uint8_t tfInitCfg = 0;
     tUKF ukfIo;
@@ -105,13 +95,6 @@ void ukf_test(void) {
             err[2] = fabs(ukfIo.update.x.val[2] - x_exp[simLoop - 1][2]);
             err[3] = fabs(ukfIo.update.x.val[3] - x_exp[simLoop - 1][3]);
 
-            /*
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][0], ukfIo.update.x.val[0], err[0]);
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][1], ukfIo.update.x.val[1], err[1]);
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][2], ukfIo.update.x.val[2], err[2]);
-            printf("% -3.5f % -3.5f % -3.14f\n", x_exp[simLoop - 1][3], ukfIo.update.x.val[3], err[3]);
-            */
-
             //accumulate the differennce between reference matlab implementation and results from C code execution
             absErrAccum[0] += err[0];
             absErrAccum[1] += err[1];
@@ -143,5 +126,18 @@ void ukf_test(void) {
 
     } else {
         printf("initialization fail\n");
+    }
+}
+
+void ukf_test2(void) {
+    tUKF ukfIo;
+    uint32_t i;
+
+    ukf_init(&ukfIo, &UkfMatrixCfg);
+
+    for (i = 1; i < 15; i++) {
+        printf("%f %f %f\n", accData[i][2], gyroData[i][1], magData[i][0]);
+        // Feed IMU data to Kalman filter
+        ukf_step(&ukfIo);
     }
 }
