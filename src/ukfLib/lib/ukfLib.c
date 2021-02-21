@@ -194,21 +194,21 @@ uint8_t ukf_init(tUKF *pUkf, tUkfMatrix *pUkfMatrix) {
     const uint8_t WmLen = pUkfMatrix->Wm_weight_vector.ncol;
     const uint8_t WcLen = pUkfMatrix->Wc_weight_vector.ncol;
 
-    pPar->xLim = pUkfMatrix->x_system_states_limits;
-    pPar->xLimEnbl = pUkfMatrix->x_system_states_limits_enable;
-    pPar->x0 = pUkfMatrix->x_system_states_ic;
-    pPar->Ryy0 = pUkfMatrix->Ryy0_init_out_covariance;
-    pPar->Pxx0 = pUkfMatrix->Pxx0_init_error_covariance;
-    pPar->Qxx = pUkfMatrix->Qxx_process_noise_cov;
-    pPar->Wm = pUkfMatrix->Wm_weight_vector;
-    pPar->Wc = pUkfMatrix->Wc_weight_vector;
-    pPar->alpha = pUkfMatrix->Sc_vector.val[alphaIdx];
-    pPar->betha = pUkfMatrix->Sc_vector.val[bethaIdx];
-    pPar->kappa = pUkfMatrix->Sc_vector.val[kappaIdx];
-    pPar->xLen = pUkfMatrix->x_system_states.nrow;
-    pPar->yLen = pUkfMatrix->y_predicted_mean.nrow;
-    pPar->sLen = 2 * pPar->xLen + 1;
-    pPar->dT = pUkfMatrix->dT;
+    pPar->xLim      = pUkfMatrix->x_system_states_limits;
+    pPar->xLimEnbl  = pUkfMatrix->x_system_states_limits_enable;
+    pPar->x0        = pUkfMatrix->x_system_states_ic;
+    pPar->Ryy0      = pUkfMatrix->Ryy0_init_out_covariance;
+    pPar->Pxx0      = pUkfMatrix->Pxx0_init_error_covariance;
+    pPar->Qxx       = pUkfMatrix->Qxx_process_noise_cov;
+    pPar->Wm        = pUkfMatrix->Wm_weight_vector;
+    pPar->Wc        = pUkfMatrix->Wc_weight_vector;
+    pPar->alpha     = pUkfMatrix->Sc_vector.val[alphaIdx];
+    pPar->betha     = pUkfMatrix->Sc_vector.val[bethaIdx];
+    pPar->kappa     = pUkfMatrix->Sc_vector.val[kappaIdx];
+    pPar->xLen      = pUkfMatrix->x_system_states.nrow;
+    pPar->yLen      = pUkfMatrix->y_predicted_mean.nrow;
+    pPar->sLen      = 2 * pPar->xLen + 1;
+    pPar->dT        = pUkfMatrix->dT;
 
     if (NULL != pUkf->par.xLimEnbl.val && NULL != pUkf->par.xLim.val) {
         for (xIdx = 0; xIdx < pPar->xLim.nrow; xIdx++) {

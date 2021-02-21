@@ -25,7 +25,8 @@ SRCS_APP = \
   src/syscalls.c \
   src/ukfLib/lib/mtxLib.c \
   src/ukfLib/lib/ukfLib.c \
-  src/ukfLib/cfg/ukfCfg.c
+  src/ukfLib/cfg/ukfCfg.c \
+  src/ukfLib/cfg/ukfCfg2.c
 
 
 INCLUDES = \
